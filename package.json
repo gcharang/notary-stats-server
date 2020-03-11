@@ -1,0 +1,25 @@
+{
+  "name": "notary-stats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gcharang/notary-stats.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gcharang/notary-stats/issues"
+  },
+  "homepage": "https://github.com/gcharang/notary-stats#readme",
+  "dependencies": {
+    "node-komodo-rpc": "^2.0.2",
+    "sequelize": "^5.21.5",
+    "sqlite3": "^4.1.1"
+  }
+}
