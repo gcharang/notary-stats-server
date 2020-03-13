@@ -200,11 +200,18 @@ transactionData = JSON.parse(txn_json);
         }
 
     }
-    const t = new SmartChain({
-        name: "TXSCLAPOW"
-    }).rpc();
-    let out = await t.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}')
-    console.log(out)
+
+    try {
+        const t = new SmartChain({
+            name: "DEXP2P2"
+        }).rpc();
+        let out = await t.getaddresstxids("RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA")
+        // let out = await t.getinfo()
+        console.log(out)
+    } catch (error) {
+        console.log(JSON.stringify(error.response.data))
+    }
+
 
 
 })();
