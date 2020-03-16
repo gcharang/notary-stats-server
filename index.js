@@ -143,7 +143,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     });
     await notary.increment(chainName)
     }) */
-    const notariesArray = transaction.get("notaries").split()
+    const notariesArray = transaction.get("notaries").split(",")
     console.log(notariesArray)
     for (const addr of notariesArray) {
         try {
@@ -154,7 +154,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             });
             await notary.increment(chainName)
         } catch (error) {
-            console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + e);
+            console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
         }
     }
 
