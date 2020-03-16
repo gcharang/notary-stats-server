@@ -11,7 +11,7 @@ const sequelize = new Sequelize('database', 'user', 'password', {
     dialect: 'sqlite',
     logging: false,
     // SQLite only
-    storage: 'Notary_txns.sqlite',
+    storage: 'db.sqlite',
 });
 
 const Transactions = sequelize.define('transactions', {
@@ -131,7 +131,7 @@ const addTxnToDb = async (transactionData, chainName) => {
                      address: addr
                  }
              });
-             notary.increment(chainName)
+             await notary.increment(chainName)
          }) */
         for (const addr of transaction.get(notaries).split()) {
             const notary = await NotariesList.findOne({
@@ -139,11 +139,8 @@ const addTxnToDb = async (transactionData, chainName) => {
                     address: addr
                 }
             });
-            notary.increment(chainName)
+            await notary.increment(chainName)
         }
-
-
-
     }
     catch (e) {
         if (e.name === 'SequelizeUniqueConstraintError') {
