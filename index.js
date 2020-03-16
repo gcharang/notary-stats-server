@@ -218,7 +218,9 @@ const addTxnToDb = async (transactionData, chainName) => {
             const rpc = new SmartChain({
                 name: name
             }).rpc();
-            const currBlockheight = await rpc.getinfo().blocks
+            const getInfo = await rpc.getinfo().blocks
+            const currBlockheight = await getInfo.blocks
+
             const txns = await rpc.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}')
             txns.forEach(async txn => {
                 if (await isNotarizationTxn(txn)) {
