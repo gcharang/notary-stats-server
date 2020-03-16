@@ -286,7 +286,7 @@ const addTxnToDb = async (transactionData, chainName) => {
                 }
             }
 
-
+            console.log("cccccccccccccc")
             let chainObj = {}
             chainObj[name] = currBlockheight
             const lastBlock = await State.findOne({
@@ -294,7 +294,11 @@ const addTxnToDb = async (transactionData, chainName) => {
                     name: "lastBlock"
                 }
             });
-            await lastBlock.update(chainObj)
+            console.log("bbbbbbbbbbbb")
+            //await lastBlock.update(chainObj)
+            lastBlock[name] = currBlockheight
+            await lastBlock.save()
+            console.log("aaaaaaa")
 
             chainObj[name] = currBlockheight
 
