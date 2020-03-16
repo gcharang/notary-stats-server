@@ -280,7 +280,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             }) */
             for (const txnId of txnIds) {
                 const txn = await rpc.getrawtransaction(txnId, 1)
-                await delaySec(0.05);
+                // await delaySec(0.05);
                 if (await isNotarizationTxn(txn)) {
                     await addTxnToDb(txn, name)
                 }
@@ -289,7 +289,7 @@ const addTxnToDb = async (transactionData, chainName) => {
 
             let chainObj = {}
             chainObj[name] = currBlockheight
-
+            console.log(JSON.stringify(chainObj))
             await State.update(chainObj, {
                 where: {
                     name: "lastBlock"
