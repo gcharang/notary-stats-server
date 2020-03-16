@@ -114,8 +114,9 @@ const addTxnToDb = async (transactionData, chainName) => {
 
     const notaryString = transactionDataObj.vin.map(utxo => utxo.address).toString()
     console.log(notaryString)
+    const transaction
     try {
-        const transaction = await Transactions.create({
+        transaction = await Transactions.create({
             txid: transactionDataObj.txid,
             txData: transactionDataStr,
             chain: chainName,
