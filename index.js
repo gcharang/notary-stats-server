@@ -247,6 +247,7 @@ const addTxnToDb = async (transactionData, chainName) => {
         } catch (error) {
             console.log(`Something went wrong.Error: \n` + error);
         }
+        console.log(name)
     }
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
