@@ -252,7 +252,10 @@ const processSmartChain = async name => {
     await processSmartChain("TXSCLAPOW")
     console.log("processed txsclapow")
     await processSmartChain("MORTY")
+    console.log("processed MORTY")
     await processSmartChain("RICK")
+    console.log("processed RICK")
+
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
 
