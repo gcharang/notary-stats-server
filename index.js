@@ -149,6 +149,7 @@ const processSmartChain = async name => {
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
         const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
+        console.log(`before txnIds loop in processingFn for ${name}`)
 
         for (const txnId of txnIds) {
             const txn = await rpc.getrawtransaction(txnId, 1)
@@ -253,7 +254,7 @@ const processSmartChain = async name => {
     console.log("processed txsclapow")
     await processSmartChain("MORTY")
     console.log("processed MORTY")
-    await processSmartChain("RICK")
+    await processSmartChain("RICK") //306637	
     console.log("processed RICK")
 
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
