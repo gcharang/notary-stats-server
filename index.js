@@ -143,7 +143,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     });
     await notary.increment(chainName)
     }) */
-    const notariesArray = transaction.get(notaries).split()
+    const notariesArray = transaction.get("notaries").split()
     console.log(notariesArray)
     for (const addr of notariesArray) {
         try {
