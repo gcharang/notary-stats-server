@@ -145,10 +145,22 @@ const processSmartChain = async (name, start) => {
         const chain = new SmartChain({
             name: name
         })
+        const lastBlock = await State.findOne({
+            where: {
+                name: "lastBlock"
+            }
+        });
+
         const rpc = chain.rpc();
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
-        const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
+        if (lastBlock[name] = 0) {
+            const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
+        } else if (lastBlock[name] <= currBlockheight) {
+            const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": lastBlock[name], "end": currBlockheight })
+        } else {
+            throw "Error: past processed blockheight greater than current"
+        }
         console.log(`before txnIds loop in processingFn for ${name}`)
 
         for (const txnId of txnIds) {
@@ -159,11 +171,7 @@ const processSmartChain = async (name, start) => {
             }
         }
         console.log(`txnIds loop in processingFn for ${name} is done`)
-        const lastBlock = await State.findOne({
-            where: {
-                name: "lastBlock"
-            }
-        });
+
         lastBlock[name] = currBlockheight
         await lastBlock.save()
 
@@ -251,11 +259,8 @@ const processSmartChain = async (name, start) => {
         }
     }
     await processSmartChain("TXSCLAPOW", 0)
-    console.log("processed txsclapow")
     await processSmartChain("MORTY", 303000)
-    console.log("processed MORTY")
     await processSmartChain("RICK", 303000)
-    console.log("processed RICK")
 
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
