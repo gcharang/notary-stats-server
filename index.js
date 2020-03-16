@@ -154,10 +154,11 @@ const processSmartChain = async (name, start) => {
         const rpc = chain.rpc();
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
+        let txnIds
         if (lastBlock[name] = 0) {
-            const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
+            txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
         } else if (lastBlock[name] <= currBlockheight) {
-            const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": lastBlock[name], "end": currBlockheight })
+            txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": lastBlock[name], "end": currBlockheight })
         } else {
             throw "Error: past processed blockheight greater than current"
         }
