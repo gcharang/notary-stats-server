@@ -65,7 +65,7 @@ const State = sequelize.define('state', {
 
 
 const isNotarizationTxn = async (transactionData) => {
-    console.log(transactionData)
+    // console.log(transactionData)
     const transactionDataObj = typeof transactionData === 'object' && transactionData !== null ? transactionData : JSON.parse(transactionData)
 
     const isCorrectNumVins = 2 < transactionDataObj.vin.length && transactionDataObj.vin.length < 13
@@ -213,7 +213,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             const currBlockheight = getInfo.blocks
             const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
             txnIds.forEach(async txnId => {
-                const txn = rpc.getrawtransaction(txnId, 1)
+                const txn = await rpc.getrawtransaction(txnId, 1)
                 if (await isNotarizationTxn(txn)) {
                     await addTxnToDb(txn, name)
                 }
