@@ -286,7 +286,6 @@ const addTxnToDb = async (transactionData, chainName) => {
                 }
             }
 
-            console.log("cccccccccccccc")
             let chainObj = {}
             chainObj[name] = currBlockheight
             const lastBlock = await State.findOne({
@@ -294,11 +293,9 @@ const addTxnToDb = async (transactionData, chainName) => {
                     name: "lastBlock"
                 }
             });
-            console.log("bbbbbbbbbbbb")
             //await lastBlock.update(chainObj)
             lastBlock[name] = currBlockheight
             await lastBlock.save()
-            console.log("aaaaaaa")
 
             chainObj[name] = currBlockheight
 
@@ -308,12 +305,11 @@ const addTxnToDb = async (transactionData, chainName) => {
                 }
             });
             await totalNotarizations.increment(name)
-            console.log("dddddddddddddddddd")
         } catch (error) {
             console.log(`Something went wrong.Error: \n` + error);
         }
     }
-
+    console.log("aaaaaaaaaaaaaaaaaa")
     //   })
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
