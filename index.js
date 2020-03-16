@@ -147,6 +147,13 @@ const addTxnToDb = async (transactionData, chainName) => {
                 console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
             }
         }
+
+        const totalNotarizations = await State.findOne({
+            where: {
+                name: "totalNotarizations"
+            }
+        });
+        await totalNotarizations.increment(chainName)
     }
     catch (e) {
         if (e.name === 'SequelizeUniqueConstraintError') {
@@ -286,8 +293,6 @@ const addTxnToDb = async (transactionData, chainName) => {
                 }
             }
 
-            let chainObj = {}
-            chainObj[name] = currBlockheight
             const lastBlock = await State.findOne({
                 where: {
                     name: "lastBlock"
@@ -297,15 +302,6 @@ const addTxnToDb = async (transactionData, chainName) => {
             lastBlock[name] = currBlockheight
             await lastBlock.save()
 
-            chainObj[name] = currBlockheight
-
-            const totalNotarizations = await State.findOne({
-                where: {
-                    name: "totalNotarizations"
-                }
-            });
-            await totalNotarizations.increment(name)
-            console.log("aaaaaaaaaaaaaaaaaa")
 
         } catch (error) {
             console.log(`Something went wrong.Error: \n` + error);
