@@ -70,29 +70,11 @@ const State = sequelize.define('state', {
 
 
 const isNotarizationTxn = async (transactionData) => {
-    // console.log(transactionData)
     const transactionDataObj = typeof transactionData === 'object' && transactionData !== null ? transactionData : JSON.parse(transactionData)
 
     const isCorrectNumVins = 2 < transactionDataObj.vin.length && transactionDataObj.vin.length < 13
     let isAllVinsNotaries = true
-    /* transactionDataObj.vin.forEach(async utxo => {
-         const isNotary = await NotariesList.findOne({
-             where: {
-                 address: utxo.address
-             }
-         });
-         isAllVinsNotaries = isAllVinsNotaries && isNotary
-     }) 
-    for (let index = 0; index < transactionDataObj.vin.length; index++) {
-        const utxo = transactionDataObj.vin[index];
-        const isNotary = await NotariesList.findOne({
-            where: {
-                address: utxo.address
-            }
-        });
-        isAllVinsNotaries = isAllVinsNotaries && isNotary
 
-    } */
     for (const utxo of transactionDataObj.vin) {
         const isNotary = await NotariesList.findOne({
             where: {
@@ -126,15 +108,6 @@ const addTxnToDb = async (transactionData, chainName) => {
         console.log(`transaction: "${transaction.txid}" added to transactions db.`);
         const notariesArray = transaction.get("notaries").split(",")
 
-        /* transaction.get("notaries").split().forEach(async addr => {
-        const notary = await NotariesList.findOne({
-         where: {
-             address: addr
-         }
-        });
-        await notary.increment(chainName)
-        }) */
-
         for (const addr of notariesArray) {
             try {
                 const notary = await NotariesList.findOne({
@@ -159,7 +132,7 @@ const addTxnToDb = async (transactionData, chainName) => {
         if (e.name === 'SequelizeUniqueConstraintError') {
             console.log(`transaction: "${transactionDataObj.txid}" already exists in the transactions db.`);
         } else {
-            console.log(`Something went wrong with transaction: "${transactionDataObj.txid}" to transactions db \n` + e);
+            console.log(`Something went wrong when dealing with transaction: "${transactionDataObj.txid}"  \n` + e);
         }
 
     }
@@ -167,9 +140,6 @@ const addTxnToDb = async (transactionData, chainName) => {
 
 }
 
-
-//transactionData = JSON.parse(txn_json);
-//console.log(transactionData.vin.map(vin => vin.addr));
 (async () => {
     await Transactions.sync();
     await NotariesList.sync();
@@ -178,29 +148,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     try {
         const response = await axios.get("https://raw.githubusercontent.com/KomodoPlatform/dPoW/testnet/iguana/testnet.json");
         const testnetJson = typeof response.data === 'object' && response.data !== null ? response.data : JSON.parse(response.data)
-        /*
-                testnetJson.notaries.forEach(async notary => {
-                    let notaryName = Object.keys(notary)[0]
-                    let pubkey = notary[notaryName]
-                    let address = pubkeyToAddress(pubkey)
-                    try {
-                        const notary = await NotariesList.create({
-                            pubkey: pubkey,
-                            name: notaryName,
-                            address: address
-                        });
-                        console.log(
-                            `notary ${notary.name} (${notary.address})  added to the DB.`
-                        );
-                    } catch (e) {
-                        if (e.name === 'SequelizeUniqueConstraintError') {
-                            console.log(`notary ${notaryName} (${address}) already exists in the notary db.`);
-                        } else {
-                            console.log(`Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` + e);
-                        }
-                    }
-                });
-        */
+
         for (const notary of testnetJson.notaries) {
 
             let notaryName = Object.keys(notary)[0]
@@ -269,7 +217,6 @@ const addTxnToDb = async (transactionData, chainName) => {
         }
     }
     const SmartChains = ["TXSCLAPOW", "MORTY"]
-    // SmartChains.forEach(async name => {
     for (const name of SmartChains) {
         try {
             const chain = new SmartChain({
@@ -279,12 +226,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             const getInfo = await rpc.getinfo()
             const currBlockheight = getInfo.blocks
             const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
-            /* txnIds.forEach(async txnId => {
-                const txn = await rpc.getrawtransaction(txnId, 1)
-                if (await isNotarizationTxn(txn)) {
-                    await addTxnToDb(txn, name)
-                }
-            }) */
+
             for (const txnId of txnIds) {
                 const txn = await rpc.getrawtransaction(txnId, 1)
                 // await delaySec(0.05);
@@ -298,7 +240,6 @@ const addTxnToDb = async (transactionData, chainName) => {
                     name: "lastBlock"
                 }
             });
-            //await lastBlock.update(chainObj)
             lastBlock[name] = currBlockheight
             await lastBlock.save()
 
@@ -307,34 +248,9 @@ const addTxnToDb = async (transactionData, chainName) => {
             console.log(`Something went wrong.Error: \n` + error);
         }
     }
-    //   })
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
 
 
 })();
 
-
-
-
-/*
-const k = new SmartChain().rpc();
-
-
-const r = new SmartChain({
-    name: "RICK"
-}).rpc();
-
-
-const m = new SmartChain({
-    name: "MORTY"
-}).rpc();
-
-
-const t = new SmartChain({
-    name: "TXSCLAPOW"
-}).rpc();
-let out = await t.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}')
-console.log(out)
-// getaddresstxids '{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}'
-*/
