@@ -140,7 +140,7 @@ const addTxnToDb = async (transactionData, chainName) => {
 }
 
 const processSmartChain = async name => {
-
+    console.log(`started processingFn for ${name}`)
     try {
         const chain = new SmartChain({
             name: name
@@ -157,7 +157,7 @@ const processSmartChain = async name => {
                 await addTxnToDb(txn, name)
             }
         }
-
+        console.log(`txnIds loop in processingFn for ${name} is done`)
         const lastBlock = await State.findOne({
             where: {
                 name: "lastBlock"
@@ -166,11 +166,11 @@ const processSmartChain = async name => {
         lastBlock[name] = currBlockheight
         await lastBlock.save()
 
-
+        console.log(`end of try block in processingFn for ${name}`)
     } catch (error) {
         console.log(`Something went wrong.Error: \n` + error);
     }
-
+    console.log(`finished processingFn for ${name}`)
 }
 
 (async () => {
@@ -250,6 +250,7 @@ const processSmartChain = async name => {
         }
     }
     await processSmartChain("TXSCLAPOW")
+    console.log("processed txsclapow")
     await processSmartChain("MORTY")
     await processSmartChain("RICK")
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
