@@ -154,9 +154,11 @@ const processSmartChain = async (name, start) => {
         const rpc = chain.rpc();
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
+        //  console.log(`lastBlock[name] vs currBlockheight: ${lastBlock[name]} vs ${currBlockheight}`)
         let txnIds
-        if (lastBlock[name] = 0) {
+        if (lastBlock[name] == 0) {
             txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
+            //    console.log(`lastBlock was 0`)
         } else if (lastBlock[name] <= currBlockheight) {
             txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": lastBlock[name], "end": currBlockheight })
         } else {
