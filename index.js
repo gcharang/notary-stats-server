@@ -113,7 +113,6 @@ const addTxnToDb = async (transactionData, chainName) => {
     const transactionDataStr = typeof transactionData === 'object' && transactionData !== null ? JSON.stringify(transactionData) : transactionData
 
     const notaryString = transactionDataObj.vin.map(utxo => utxo.address).toString()
-    console.log(notaryString)
     let transaction
     try {
         transaction = await Transactions.create({
@@ -144,7 +143,6 @@ const addTxnToDb = async (transactionData, chainName) => {
     await notary.increment(chainName)
     }) */
     const notariesArray = transaction.get("notaries").split(",")
-    console.log(notariesArray)
     for (const addr of notariesArray) {
         try {
             const notary = await NotariesList.findOne({
