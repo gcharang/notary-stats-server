@@ -70,14 +70,32 @@ const isNotarizationTxn = async (transactionData) => {
 
     const isCorrectNumVins = 2 < transactionDataObj.vin.length && transactionDataObj.vin.length < 13
     let isAllVinsNotaries = true
-    transactionDataObj.vin.forEach(async utxo => {
+    /* transactionDataObj.vin.forEach(async utxo => {
+         const isNotary = await NotariesList.findOne({
+             where: {
+                 address: utxo.addr
+             }
+         });
+         isAllVinsNotaries = isAllVinsNotaries && isNotary
+     }) 
+    for (let index = 0; index < transactionDataObj.vin.length; index++) {
+        const utxo = transactionDataObj.vin[index];
         const isNotary = await NotariesList.findOne({
             where: {
                 address: utxo.addr
             }
         });
         isAllVinsNotaries = isAllVinsNotaries && isNotary
-    })
+
+    } */
+    for (const utxo of transactionDataObj.vin) {
+        const isNotary = await NotariesList.findOne({
+            where: {
+                address: utxo.addr
+            }
+        });
+        isAllVinsNotaries = isAllVinsNotaries && isNotary
+    }
     if (isCorrectNumVins && isAllVinsNotaries) {
         return true
     } else {
@@ -102,14 +120,22 @@ const addTxnToDb = async (transactionData, chainName) => {
         });
         console.log(`transaction: "${transaction.txid} " added to transactions db.`);
 
-        transaction.get(notaries).split().forEach(async addr => {
+        /* transaction.get(notaries).split().forEach(async addr => {
+             const notary = await NotariesList.findOne({
+                 where: {
+                     address: addr
+                 }
+             });
+             notary.increment(chainName)
+         }) */
+        for (const addr of transaction.get(notaries).split()) {
             const notary = await NotariesList.findOne({
                 where: {
                     address: addr
                 }
             });
             notary.increment(chainName)
-        })
+        }
 
 
 
@@ -135,8 +161,31 @@ const addTxnToDb = async (transactionData, chainName) => {
     try {
         const response = await axios.get("https://raw.githubusercontent.com/KomodoPlatform/dPoW/testnet/iguana/testnet.json");
         const testnetJson = typeof response.data === 'object' && response.data !== null ? response.data : JSON.parse(response.data)
+        /*
+                testnetJson.notaries.forEach(async notary => {
+                    let notaryName = Object.keys(notary)[0]
+                    let pubkey = notary[notaryName]
+                    let address = pubkeyToAddress(pubkey)
+                    try {
+                        const notary = await NotariesList.create({
+                            pubkey: pubkey,
+                            name: notaryName,
+                            address: address
+                        });
+                        console.log(
+                            `notary ${notary.name} (${notary.address})  added to the DB.`
+                        );
+                    } catch (e) {
+                        if (e.name === 'SequelizeUniqueConstraintError') {
+                            console.log(`notary ${notaryName} (${address}) already exists in the notary db.`);
+                        } else {
+                            console.log(`Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` + e);
+                        }
+                    }
+                });
+        */
+        for (const notary of testnetJson.notaries) {
 
-        testnetJson.notaries.forEach(async notary => {
             let notaryName = Object.keys(notary)[0]
             let pubkey = notary[notaryName]
             let address = pubkeyToAddress(pubkey)
@@ -156,7 +205,7 @@ const addTxnToDb = async (transactionData, chainName) => {
                     console.log(`Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` + e);
                 }
             }
-        });
+        }
     } catch (error) {
         console.error(`error: ${error}`);
     }
@@ -203,7 +252,8 @@ const addTxnToDb = async (transactionData, chainName) => {
         }
     }
     const SmartChains = ["TXSCLAPOW", "RICK", "MORTY"]
-    SmartChains.forEach(async name => {
+    // SmartChains.forEach(async name => {
+    for (const name of SmartChains) {
         try {
             const chain = new SmartChain({
                 name: name
@@ -212,13 +262,21 @@ const addTxnToDb = async (transactionData, chainName) => {
             const getInfo = await rpc.getinfo()
             const currBlockheight = getInfo.blocks
             const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
-            txnIds.forEach(async txnId => {
+            /* txnIds.forEach(async txnId => {
                 const txn = await rpc.getrawtransaction(txnId, 1)
                 if (await isNotarizationTxn(txn)) {
                     await addTxnToDb(txn, name)
                 }
-            })
-            const chainObj = {}
+            }) */
+            for (const txnId of txnIds) {
+                const txn = await rpc.getrawtransaction(txnId, 1)
+                if (await isNotarizationTxn(txn)) {
+                    await addTxnToDb(txn, name)
+                }
+            }
+
+
+            let chainObj = {}
             chainObj[name] = currBlockheight
 
             await State.update(chainObj, {
@@ -238,7 +296,9 @@ const addTxnToDb = async (transactionData, chainName) => {
         } catch (error) {
             console.log(`Something went wrong.Error: \n` + error);
         }
-    })
+    }
+
+    //   })
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
 
