@@ -22,7 +22,10 @@ const Transactions = sequelize.define('transactions', {
     },
     txData: Sequelize.TEXT,
     chain: Sequelize.STRING,
-    notaries: Sequelize.TEXT,
+    notaries: {
+        type: Sequelize.TEXT,
+        defaultValue: ''
+    },
     height: Sequelize.INTEGER,
     unixTimestamp: Sequelize.INTEGER
 });
