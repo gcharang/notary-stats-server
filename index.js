@@ -91,7 +91,6 @@ const isNotarizationTxn = async (transactionData) => {
 
     } */
     for (const utxo of transactionDataObj.vin) {
-        console.log(utxo)
         const isNotary = await NotariesList.findOne({
             where: {
                 address: utxo.address
@@ -117,7 +116,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             txid: transactionDataObj.txid,
             txData: transactionDataStr,
             chain: chainName,
-            notaries: transactionDataObj.vin.map(utxo => utxo.addr).toString(),
+            notaries: transactionDataObj.vin.map(utxo => utxo.address).toString(),
             height: transactionDataObj.height,
             unixTimestamp: transactionDataObj.time
         });
