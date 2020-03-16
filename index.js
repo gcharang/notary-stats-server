@@ -137,6 +137,39 @@ const addTxnToDb = async (transactionData, chainName) => {
 
     }
 
+}
+
+const processSmartChain = async name => {
+
+    try {
+        const chain = new SmartChain({
+            name: name
+        })
+        const rpc = chain.rpc();
+        const getInfo = await rpc.getinfo()
+        const currBlockheight = getInfo.blocks
+        const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
+
+        for (const txnId of txnIds) {
+            const txn = await rpc.getrawtransaction(txnId, 1)
+            // await delaySec(0.05);
+            if (await isNotarizationTxn(txn)) {
+                await addTxnToDb(txn, name)
+            }
+        }
+
+        const lastBlock = await State.findOne({
+            where: {
+                name: "lastBlock"
+            }
+        });
+        lastBlock[name] = currBlockheight
+        await lastBlock.save()
+
+
+    } catch (error) {
+        console.log(`Something went wrong.Error: \n` + error);
+    }
 
 }
 
@@ -216,39 +249,8 @@ const addTxnToDb = async (transactionData, chainName) => {
             console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
         }
     }
-    const SmartChains = ["TXSCLAPOW", "MORTY"]
-    for (const name of SmartChains) {
-        try {
-            const chain = new SmartChain({
-                name: name
-            })
-            const rpc = chain.rpc();
-            const getInfo = await rpc.getinfo()
-            const currBlockheight = getInfo.blocks
-            const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
-
-            for (const txnId of txnIds) {
-                const txn = await rpc.getrawtransaction(txnId, 1)
-                // await delaySec(0.05);
-                if (await isNotarizationTxn(txn)) {
-                    await addTxnToDb(txn, name)
-                }
-            }
-
-            const lastBlock = await State.findOne({
-                where: {
-                    name: "lastBlock"
-                }
-            });
-            lastBlock[name] = currBlockheight
-            await lastBlock.save()
-
-
-        } catch (error) {
-            console.log(`Something went wrong.Error: \n` + error);
-        }
-        console.log(name)
-    }
+    //  const SmartChains = ["TXSCLAPOW", "RICK"]
+    await processSmartChain("TXSCLAPOW")
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
 
