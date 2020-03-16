@@ -215,7 +215,9 @@ const addTxnToDb = async (transactionData, chainName) => {
     const SmartChains = ["TXSCLAPOW", "RICK", "MORTY"]
     SmartChains.forEach(async name => {
         try {
-            const rpc = await initSmartChain(name)
+            const rpc = new SmartChain({
+                name: name
+            }).rpc();
             const currBlockheight = await rpc.getinfo().result.blocks
             const txns = await rpc.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}').result
             txns.forEach(async txn => {
