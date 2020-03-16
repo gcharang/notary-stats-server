@@ -289,12 +289,12 @@ const addTxnToDb = async (transactionData, chainName) => {
 
             let chainObj = {}
             chainObj[name] = currBlockheight
-            console.log(JSON.stringify(chainObj))
-            await State.update(chainObj, {
+            const lastBlock = await State.findOne({
                 where: {
                     name: "lastBlock"
                 }
             });
+            await lastBlock.update(chainObj)
 
             chainObj[name] = currBlockheight
 
