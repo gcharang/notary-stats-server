@@ -220,8 +220,9 @@ const addTxnToDb = async (transactionData, chainName) => {
             }).rpc();
             const getInfo = await rpc.getinfo().blocks
             const currBlockheight = await getInfo.blocks
-
+            console.log(currBlockheight)
             const txns = await rpc.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}')
+            console.log(txns)
             txns.forEach(async txn => {
                 if (await isNotarizationTxn(txn)) {
                     await addTxnToDb(txn, name)
