@@ -1,6 +1,6 @@
 Notary_txns.sqlite
 testnet.json
-
+*.sqlite
 
 # Logs
 logs
