@@ -62,20 +62,10 @@ const State = sequelize.define('state', {
     KMD: Sequelize.INTEGER
 });
 
-const initSmartChain = async (name) => {
-    try {
-        return new SmartChain({
-            name: name
-        }).rpc();
-        // let out = await t.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": 6000, "end": 6500 })
-        // let out = await t.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
-        //console.log(out)
-    } catch (error) {
-        console.log(JSON.stringify(error.response.data))
-    }
-}
+
 
 const isNotarizationTxn = async (transactionData) => {
+    console.log(transactionData)
     const transactionDataObj = typeof transactionData === 'object' && transactionData !== null ? transactionData : JSON.parse(transactionData)
 
     const isCorrectNumVins = 2 < transactionDataObj.vin.length && transactionDataObj.vin.length < 13
