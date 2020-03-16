@@ -139,7 +139,7 @@ const addTxnToDb = async (transactionData, chainName) => {
 
 }
 
-const processSmartChain = async name => {
+const processSmartChain = async (name, start) => {
     console.log(`started processingFn for ${name}`)
     try {
         const chain = new SmartChain({
@@ -148,7 +148,7 @@ const processSmartChain = async name => {
         const rpc = chain.rpc();
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
-        const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"] })
+        const txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
         console.log(`before txnIds loop in processingFn for ${name}`)
 
         for (const txnId of txnIds) {
@@ -250,11 +250,11 @@ const processSmartChain = async name => {
             console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
         }
     }
-    await processSmartChain("TXSCLAPOW")
+    await processSmartChain("TXSCLAPOW", 0)
     console.log("processed txsclapow")
-    await processSmartChain("MORTY")
+    await processSmartChain("MORTY", 303000)
     console.log("processed MORTY")
-    await processSmartChain("RICK") //306637	
+    await processSmartChain("RICK", 303000)
     console.log("processed RICK")
 
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
