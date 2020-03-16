@@ -234,7 +234,7 @@ const addTxnToDb = async (transactionData, chainName) => {
                     name: "totalNotarizations"
                 }
             });
-            totalNotarizations.increment(name)
+            await totalNotarizations.increment(name)
         } catch (error) {
             console.log(`Something went wrong.Error: \n` + error);
         }
