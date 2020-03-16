@@ -113,9 +113,9 @@ const addTxnToDb = async (transactionData, chainName) => {
     const transactionDataStr = typeof transactionData === 'object' && transactionData !== null ? JSON.stringify(transactionData) : transactionData
 
     const notaryString = transactionDataObj.vin.map(utxo => utxo.address).toString()
-    let transaction
+
     try {
-        transaction = await Transactions.create({
+        const transaction = await Transactions.create({
             txid: transactionDataObj.txid,
             txData: transactionDataStr,
             chain: chainName,
@@ -123,38 +123,40 @@ const addTxnToDb = async (transactionData, chainName) => {
             height: transactionDataObj.height,
             unixTimestamp: transactionDataObj.time
         });
-        console.log(`transaction: "${transaction.txid} " added to transactions db.`);
+        console.log(`transaction: "${transaction.txid}" added to transactions db.`);
+        const notariesArray = transaction.get("notaries").split(",")
+
+        /* transaction.get("notaries").split().forEach(async addr => {
+        const notary = await NotariesList.findOne({
+         where: {
+             address: addr
+         }
+        });
+        await notary.increment(chainName)
+        }) */
+
+        for (const addr of notariesArray) {
+            try {
+                const notary = await NotariesList.findOne({
+                    where: {
+                        address: addr
+                    }
+                });
+                await notary.increment(chainName)
+            } catch (error) {
+                console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
+            }
+        }
     }
     catch (e) {
         if (e.name === 'SequelizeUniqueConstraintError') {
             console.log(`transaction: "${transactionDataObj.txid}" already exists in the transactions db.`);
         } else {
-            console.log(`Something went wrong with adding transaction: "${transactionDataObj.txid}" to transactions db \n` + e);
+            console.log(`Something went wrong with transaction: "${transactionDataObj.txid}" to transactions db \n` + e);
         }
 
     }
 
-    /* transaction.get(notaries).split().forEach(async addr => {
-    const notary = await NotariesList.findOne({
-     where: {
-         address: addr
-     }
-    });
-    await notary.increment(chainName)
-    }) */
-    const notariesArray = transaction.get("notaries").split(",")
-    for (const addr of notariesArray) {
-        try {
-            const notary = await NotariesList.findOne({
-                where: {
-                    address: addr
-                }
-            });
-            await notary.increment(chainName)
-        } catch (error) {
-            console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
-        }
-    }
 
 }
 
