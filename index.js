@@ -220,8 +220,8 @@ const addTxnToDb = async (transactionData, chainName) => {
             })
             const rpc = chain.rpc();
             console.log(chain.config)
-            const getInfo = await rpc.getinfo().blocks
-            const currBlockheight = await getInfo.blocks
+            const getInfo = await rpc.getinfo()
+            const currBlockheight = getInfo.blocks
             console.log(currBlockheight)
             const txns = await rpc.getaddresstxids('{"addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"]}')
             console.log(txns)
