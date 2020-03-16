@@ -75,7 +75,7 @@ const isNotarizationTxn = async (transactionData) => {
     /* transactionDataObj.vin.forEach(async utxo => {
          const isNotary = await NotariesList.findOne({
              where: {
-                 address: utxo.addr
+                 address: utxo.address
              }
          });
          isAllVinsNotaries = isAllVinsNotaries && isNotary
@@ -84,16 +84,17 @@ const isNotarizationTxn = async (transactionData) => {
         const utxo = transactionDataObj.vin[index];
         const isNotary = await NotariesList.findOne({
             where: {
-                address: utxo.addr
+                address: utxo.address
             }
         });
         isAllVinsNotaries = isAllVinsNotaries && isNotary
 
     } */
     for (const utxo of transactionDataObj.vin) {
+        console.log(utxo)
         const isNotary = await NotariesList.findOne({
             where: {
-                address: utxo.addr
+                address: utxo.address
             }
         });
         isAllVinsNotaries = isAllVinsNotaries && isNotary
