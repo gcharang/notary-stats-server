@@ -3,6 +3,8 @@ const SmartChain = require("node-komodo-rpc");
 const axios = require("axios")
 const pubkeyToAddress = require("./pubkeyToAddress.js").pubkeyToAddress
 
+const delaySec = s => new Promise(res => setTimeout(res, s * 1000));
+
 
 const sequelize = new Sequelize('database', 'user', 'password', {
     host: 'localhost',
@@ -251,7 +253,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
         }
     }
-    const SmartChains = ["TXSCLAPOW", "RICK", "MORTY"]
+    const SmartChains = ["TXSCLAPOW", "MORTY"]
     // SmartChains.forEach(async name => {
     for (const name of SmartChains) {
         try {
@@ -270,6 +272,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             }) */
             for (const txnId of txnIds) {
                 const txn = await rpc.getrawtransaction(txnId, 1)
+                await delaySec(0.05);
                 if (await isNotarizationTxn(txn)) {
                     await addTxnToDb(txn, name)
                 }
