@@ -112,14 +112,14 @@ const addTxnToDb = async (transactionData, chainName) => {
     const transactionDataObj = typeof transactionData === 'object' && transactionData !== null ? transactionData : JSON.parse(transactionData)
     const transactionDataStr = typeof transactionData === 'object' && transactionData !== null ? JSON.stringify(transactionData) : transactionData
 
-
-
+    const notaryString = transactionDataObj.vin.map(utxo => utxo.address).toString()
+    console.log(notaryString)
     try {
         const transaction = await Transactions.create({
             txid: transactionDataObj.txid,
             txData: transactionDataStr,
             chain: chainName,
-            notaries: transactionDataObj.vin.map(utxo => utxo.address).toString(),
+            notaries: notaryString,
             height: transactionDataObj.height,
             unixTimestamp: transactionDataObj.time
         });
