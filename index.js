@@ -124,23 +124,6 @@ const addTxnToDb = async (transactionData, chainName) => {
             unixTimestamp: transactionDataObj.time
         });
         console.log(`transaction: "${transaction.txid} " added to transactions db.`);
-
-        /* transaction.get(notaries).split().forEach(async addr => {
-             const notary = await NotariesList.findOne({
-                 where: {
-                     address: addr
-                 }
-             });
-             await notary.increment(chainName)
-         }) */
-        for (const addr of transaction.get(notaries).split()) {
-            const notary = await NotariesList.findOne({
-                where: {
-                    address: addr
-                }
-            });
-            await notary.increment(chainName)
-        }
     }
     catch (e) {
         if (e.name === 'SequelizeUniqueConstraintError') {
@@ -150,6 +133,30 @@ const addTxnToDb = async (transactionData, chainName) => {
         }
 
     }
+
+    /* transaction.get(notaries).split().forEach(async addr => {
+    const notary = await NotariesList.findOne({
+     where: {
+         address: addr
+     }
+    });
+    await notary.increment(chainName)
+    }) */
+    const notariesArray = transaction.get(notaries).split()
+    console.log(notariesArray)
+    for (const addr of notariesArray) {
+        try {
+            const notary = await NotariesList.findOne({
+                where: {
+                    address: addr
+                }
+            });
+            await notary.increment(chainName)
+        } catch (error) {
+            console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + e);
+        }
+    }
+
 }
 
 
