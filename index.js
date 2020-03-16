@@ -249,8 +249,9 @@ const processSmartChain = async name => {
             console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
         }
     }
-    //  const SmartChains = ["TXSCLAPOW", "RICK"]
     await processSmartChain("TXSCLAPOW")
+    await processSmartChain("MORTY")
+    await processSmartChain("RICK")
     const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
     console.log(JSON.stringify(notaryData))
 
