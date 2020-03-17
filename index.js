@@ -135,11 +135,12 @@ const addTxnToDb = async (transactionData, chainName) => {
                         txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
                     }
                 })
-                /*
-                if (oldNotaTxn.unixTimestamp < transaction.unixTimestamp) {
+                console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
+
+                if (parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)) {
                     notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
                     await notary.save()
-                } */
+                }
 
             } catch (error) {
                 console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
