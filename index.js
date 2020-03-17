@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const SmartChain = require("node-komodo-rpc");
 const axios = require("axios")
+const moment = require("moment")
+
 const pubkeyToAddress = require("./pubkeyToAddress.js").pubkeyToAddress
 
 const delaySec = s => new Promise(res => setTimeout(res, s * 1000));
@@ -42,13 +44,25 @@ const NotariesList = sequelize.define('notariesList', {
         type: Sequelize.INTEGER,
         defaultValue: '0'
     },
+    lastRICKNotaTxnIdStamp: {
+        type: Sequelize.STRING,
+        defaultValue: ''
+    },
     MORTY: {
         type: Sequelize.INTEGER,
         defaultValue: '0'
     },
+    lastMORTYNotaTxnIdStamp: {
+        type: Sequelize.STRING,
+        defaultValue: ''
+    },
     TXSCLAPOW: {
         type: Sequelize.INTEGER,
         defaultValue: '0'
+    },
+    lastTXSCLAPOWNotaTxnIdStamp: {
+        type: Sequelize.STRING,
+        defaultValue: ''
     },
     KMD: {
         type: Sequelize.INTEGER,
@@ -105,7 +119,7 @@ const addTxnToDb = async (transactionData, chainName) => {
             height: transactionDataObj.height,
             unixTimestamp: transactionDataObj.time
         });
-        console.log(`transaction: "${transaction.txid}" added to transactions db.`);
+        console.log(`transaction: "${transaction.txid}" of ${chainName} added to transactions db.`);
         const notariesArray = transaction.get("notaries").split(",")
 
         for (const addr of notariesArray) {
@@ -116,6 +130,16 @@ const addTxnToDb = async (transactionData, chainName) => {
                     }
                 });
                 await notary.increment(chainName)
+                const oldNotaTxn = await Transactions.findOne({
+                    where: {
+                        txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
+                    }
+                })
+                if (oldNotaTxn.unixTimestamp < transaction.unixTimestamp) {
+                    notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
+                    await notary.save()
+                }
+
             } catch (error) {
                 console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
             }
@@ -130,7 +154,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     }
     catch (e) {
         if (e.name === 'SequelizeUniqueConstraintError') {
-            console.log(`transaction: "${transactionDataObj.txid}" already exists in the transactions db.`);
+            console.log(`transaction: "${transactionDataObj.txid}" of ${chainName} chain already exists in the transactions db.`);
         } else {
             console.log(`Something went wrong when dealing with transaction: "${transactionDataObj.txid}"  \n` + e);
         }
@@ -140,7 +164,6 @@ const addTxnToDb = async (transactionData, chainName) => {
 }
 
 const processSmartChain = async (name, start) => {
-    console.log(`started processingFn for ${name}`)
     try {
         const chain = new SmartChain({
             name: name
@@ -154,17 +177,14 @@ const processSmartChain = async (name, start) => {
         const rpc = chain.rpc();
         const getInfo = await rpc.getinfo()
         const currBlockheight = getInfo.blocks
-        //  console.log(`lastBlock[name] vs currBlockheight: ${lastBlock[name]} vs ${currBlockheight}`)
         let txnIds
         if (lastBlock[name] == 0) {
             txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": start, "end": currBlockheight })
-            //    console.log(`lastBlock was 0`)
         } else if (lastBlock[name] <= currBlockheight) {
             txnIds = await rpc.getaddresstxids({ "addresses": ["RXL3YXG2ceaB6C5hfJcN4fvmLH2C34knhA"], "start": lastBlock[name], "end": currBlockheight })
         } else {
             throw "Error: past processed blockheight greater than current"
         }
-        console.log(`before txnIds loop in processingFn for ${name}`)
 
         for (const txnId of txnIds) {
             const txn = await rpc.getrawtransaction(txnId, 1)
@@ -173,16 +193,13 @@ const processSmartChain = async (name, start) => {
                 await addTxnToDb(txn, name)
             }
         }
-        console.log(`txnIds loop in processingFn for ${name} is done`)
 
         lastBlock[name] = currBlockheight
         await lastBlock.save()
 
-        console.log(`end of try block in processingFn for ${name}`)
     } catch (error) {
         console.log(`Something went wrong.Error: \n` + error);
     }
-    console.log(`finished processingFn for ${name}`)
 }
 
 (async () => {
@@ -265,7 +282,12 @@ const processSmartChain = async (name, start) => {
     await processSmartChain("MORTY", 303000)
     await processSmartChain("RICK", 303000)
 
-    const notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW"] })
+    let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
+    notaryData.forEach((notary, index, srcArray) => {
+        const timeStampLastRICKNota = moment(notary.lastRICKNotaTxnIdStamp.split(",")[1])
+        srcArray[index].timeSinceRICK = timeStampLastRICKNota.diff(moment().unix())
+    });
+
     console.log(JSON.stringify(notaryData))
 
 
