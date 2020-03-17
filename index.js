@@ -302,7 +302,7 @@ const processSmartChain = async (name, start) => {
             console.log(`srcArray[index][----]: ${notaryData[index][`timeSince${chainName}`]}`)
         }, notaryData); */
         notaryData = notaryData.map(notary => {
-            if (notary instanceof NotariesList.Instance) {
+            if (notary instanceof NotariesList) {
                 notary = notary.toJSON()
             }
             const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
