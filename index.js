@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const SmartChain = require("node-komodo-rpc");
 const axios = require("axios")
 const moment = require("moment")
-import * as authsAws from "./creds.js"
+let authsAws = require("./creds.js")
 
 const pubkeyToAddress = require("./pubkeyToAddress.js").pubkeyToAddress
 
