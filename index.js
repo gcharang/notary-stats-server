@@ -289,6 +289,7 @@ const processSmartChain = async (name, start) => {
     let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
     const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
     let completeNotaryData
+    let mommentNow = moment()
     for (const chain of SmartChains) {
         let chainName = Object.keys(chain)[0]
         let start = chain[chainName]
@@ -302,8 +303,9 @@ const processSmartChain = async (name, start) => {
         }, notaryData); */
         completeNotaryData = notaryData.map(notary => {
             const timeStampLastNota = moment(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment())).humanize(true)
-            console.log(moment.duration(timeStampLastNota.diff(moment())).humanize(true))
+            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(mommentNow)).humanize(true)
+            console.log(moment.duration(timeStampLastNota.diff(mommentNow)).humanize(true))
+            return notary
         });
     }
     /*
