@@ -294,9 +294,9 @@ const processSmartChain = async (name, start) => {
         await processSmartChain(chainName, start)
         notaryData.forEach((notary, index, srcArray) => {
             const timeStampLastNota = moment(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).asMinutes().humanize()
-            srcArray[index][`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).asMinutes().humanize()
-            console.log(moment.duration(timeStampLastNota.diff(moment().unix())).asMinutes().humanize())
+            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize()
+            srcArray[index][`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize()
+            console.log(moment.duration(timeStampLastNota.diff(moment().unix())).humanize())
             console.log(`srcArray[index][----]: ${srcArray[index][`timeSince${chainName}`]}`)
         });
     }
