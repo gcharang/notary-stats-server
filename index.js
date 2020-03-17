@@ -303,7 +303,10 @@ const processSmartChain = async (name, start) => {
                 console.log(timeStampLastNota.isValid())
             }
             notary[`timeSince${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
-            // console.log(moment.duration(timeStampLastNota.diff(momentNow)))
+            if (!timeStampLastNota.isValid()) {
+                notary[`timeSince${chainName}`] = "Never"
+            }
+            console.log(notary[`timeSince${chainName}`])
             return notary
         });
     }
@@ -314,7 +317,5 @@ const processSmartChain = async (name, start) => {
 })();
 /*
 
-            if (!timeStampLastNota.isValid()) {
-                notary[`timeSince${chainName}`] = "Never"
-            }
+
 */
