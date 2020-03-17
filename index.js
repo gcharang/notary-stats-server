@@ -300,10 +300,10 @@ const processSmartChain = async (name, start) => {
             console.log(moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true))
             console.log(`srcArray[index][----]: ${notaryData[index][`timeSince${chainName}`]}`)
         }, notaryData); */
-        completeNotaryData = notaryData.map((notary) => {
+        completeNotaryData = notaryData.map(notary => {
             const timeStampLastNota = moment(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
-            console.log(moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true))
+            notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().now())).humanize(true)
+            console.log(moment.duration(timeStampLastNota.diff(moment().now())).humanize(true))
         });
     }
     /*
