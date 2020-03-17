@@ -241,123 +241,130 @@ const processSmartChain = async (name, start) => {
         console.log(`Something went wrong.Error: \n` + error);
     }
 }
-
 (async () => {
-    await Transactions.sync();
-    await NotariesList.sync();
-    await State.sync();
+    while (true) {
 
-    try {
-        const response = await axios.get("https://raw.githubusercontent.com/KomodoPlatform/dPoW/testnet/iguana/testnet.json");
-        const testnetJson = typeof response.data === 'object' && response.data !== null ? response.data : JSON.parse(response.data)
+        await Transactions.sync();
+        await NotariesList.sync();
+        await State.sync();
 
-        for (const notary of testnetJson.notaries) {
+        try {
+            const response = await axios.get("https://raw.githubusercontent.com/KomodoPlatform/dPoW/testnet/iguana/testnet.json");
+            const testnetJson = typeof response.data === 'object' && response.data !== null ? response.data : JSON.parse(response.data)
 
-            let notaryName = Object.keys(notary)[0]
-            let pubkey = notary[notaryName]
-            let address = pubkeyToAddress(pubkey)
-            try {
-                const notary = await NotariesList.create({
-                    pubkey: pubkey,
-                    name: notaryName,
-                    address: address
-                });
-                console.log(
-                    `notary ${notary.name} (${notary.address})  added to the DB.`
-                );
-            } catch (e) {
-                if (e.name === 'SequelizeUniqueConstraintError') {
-                    console.log(`notary ${notaryName} (${address}) already exists in the notary db.`);
-                } else {
-                    console.log(`Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` + e);
+            for (const notary of testnetJson.notaries) {
+
+                let notaryName = Object.keys(notary)[0]
+                let pubkey = notary[notaryName]
+                let address = pubkeyToAddress(pubkey)
+                try {
+                    const notary = await NotariesList.create({
+                        pubkey: pubkey,
+                        name: notaryName,
+                        address: address
+                    });
+                    console.log(
+                        `notary ${notary.name} (${notary.address})  added to the DB.`
+                    );
+                } catch (e) {
+                    if (e.name === 'SequelizeUniqueConstraintError') {
+                        console.log(`notary ${notaryName} (${address}) already exists in the notary db.`);
+                    } else {
+                        console.log(`Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` + e);
+                    }
                 }
             }
+        } catch (error) {
+            console.error(`error: ${error}`);
         }
-    } catch (error) {
-        console.error(`error: ${error}`);
-    }
 
-    try {
-        let state = await State.create({
-            name: "lastBlock",
-            RICK: 0,
-            MORTY: 0,
-            TXSCLAPOW: 0,
-            KMD: 0
-        });
-        console.log(
-            `${state.name} created in State db`
-        );
+        try {
+            let state = await State.create({
+                name: "lastBlock",
+                RICK: 0,
+                MORTY: 0,
+                TXSCLAPOW: 0,
+                KMD: 0
+            });
+            console.log(
+                `${state.name} created in State db`
+            );
 
-    } catch (e) {
-        if (e.name === 'SequelizeUniqueConstraintError') {
-            console.log(`"lastBlock" already exists in the State db.`);
+        } catch (e) {
+            if (e.name === 'SequelizeUniqueConstraintError') {
+                console.log(`"lastBlock" already exists in the State db.`);
 
-        } else {
-            console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
+            } else {
+                console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
+            }
         }
-    }
 
-    try {
-        let state = await State.create({
-            name: "totalNotarizations",
-            RICK: 0,
-            MORTY: 0,
-            TXSCLAPOW: 0,
-            KMD: 0
-        });
-        console.log(
-            `${state.name} created in State db`
-        );
+        try {
+            let state = await State.create({
+                name: "totalNotarizations",
+                RICK: 0,
+                MORTY: 0,
+                TXSCLAPOW: 0,
+                KMD: 0
+            });
+            console.log(
+                `${state.name} created in State db`
+            );
 
-    } catch (e) {
-        if (e.name === 'SequelizeUniqueConstraintError') {
-            console.log(`"totalNotarizations" already exists in the State db.`);
+        } catch (e) {
+            if (e.name === 'SequelizeUniqueConstraintError') {
+                console.log(`"totalNotarizations" already exists in the State db.`);
 
-        } else {
-            console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
+            } else {
+                console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
+            }
         }
+        let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
+        const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
+
+        let momentNow = moment()
+        for (const chain of SmartChains) {
+            let chainName = Object.keys(chain)[0]
+            let start = chain[chainName]
+            await processSmartChain(chainName, start)
+            notaryData = notaryData.map(notary => {
+                if (notary instanceof NotariesList) {
+                    notary = notary.toJSON()
+                }
+                const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
+                const notaTxId = notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
+                notary[`notaTimeStamp${chainName}`] = timeStampLastNota
+                notary[`timeSinceNota${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
+                delete notary[`last${chainName}NotaTxnIdStamp`]
+                notary[`last${chainName}NotaTxnId`] = notaTxId
+                if (!timeStampLastNota.isValid()) {
+                    notary[`timeSinceNota${chainName}`] = "Never"
+                    notary[`notaTimeStamp${chainName}`] = "None"
+                    notary[`last${chainName}NotaTxnId`] = "None"
+                }
+                let chainData = {
+                    totalNotas: notary[`${chainName}`],
+                    lastNotaTimeStamp: notary[`notaTimeStamp${chainName}`],
+                    lastNotaTxnId: notary[`last${chainName}NotaTxnId`],
+                    timeSinceLastNota: notary[`timeSinceNota${chainName}`]
+                }
+                notary[`${chainName}`] = chainData
+
+                delete notary[`timeSinceNota${chainName}`]
+                delete notary[`notaTimeStamp${chainName}`]
+                delete notary[`last${chainName}NotaTxnId`]
+
+                return notary
+            });
+        }
+
+        console.log(JSON.stringify(notaryData))
+        await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
+        console.log(`--------------------------------------------------
+        waiting 1 minute before carrying on the next update                
+        ---------------------------------------------------`)
+        await delaySec(60)
+
+
     }
-    let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
-    const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
-
-    let momentNow = moment()
-    for (const chain of SmartChains) {
-        let chainName = Object.keys(chain)[0]
-        let start = chain[chainName]
-        await processSmartChain(chainName, start)
-        notaryData = notaryData.map(notary => {
-            if (notary instanceof NotariesList) {
-                notary = notary.toJSON()
-            }
-            const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            const notaTxId = notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
-            notary[`notaTimeStamp${chainName}`] = timeStampLastNota
-            notary[`timeSinceNota${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
-            delete notary[`last${chainName}NotaTxnIdStamp`]
-            notary[`last${chainName}NotaTxnId`] = notaTxId
-            if (!timeStampLastNota.isValid()) {
-                notary[`timeSinceNota${chainName}`] = "Never"
-                notary[`notaTimeStamp${chainName}`] = "None"
-                notary[`last${chainName}NotaTxnId`] = "None"
-            }
-            let chainData = {
-                totalNotas: notary[`${chainName}`],
-                lastNotaTimeStamp: notary[`notaTimeStamp${chainName}`],
-                lastNotaTxnId: notary[`last${chainName}NotaTxnId`],
-                timeSinceLastNota: notary[`timeSinceNota${chainName}`]
-            }
-            notary[`${chainName}`] = chainData
-
-            delete notary[`timeSinceNota${chainName}`]
-            delete notary[`notaTimeStamp${chainName}`]
-            delete notary[`last${chainName}NotaTxnId`]
-
-            return notary
-        });
-    }
-
-    console.log(JSON.stringify(notaryData))
-    await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
-
 })();
