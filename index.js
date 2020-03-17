@@ -290,7 +290,7 @@ const processSmartChain = async (name, start) => {
     const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
     for (const chain of SmartChains) {
         let chainName = Object.keys(chain)[0]
-        let start = chain[name]
+        let start = chain[chainName]
         await processSmartChain(chainName, start)
         notaryData.forEach((notary, index, srcArray) => {
             const timeStampLastNota = moment(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1])
