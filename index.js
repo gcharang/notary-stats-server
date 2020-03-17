@@ -130,6 +130,8 @@ const addTxnToDb = async (transactionData, chainName) => {
                     }
                 });
                 await notary.increment(chainName)
+                console.log(`notary[-----------].split(",")[0]: ${notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]}`)
+
                 const oldNotaTxn = await Transactions.findOne({
                     where: {
                         txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
