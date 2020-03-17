@@ -8,7 +8,7 @@ const pubkeyToAddress = require("./pubkeyToAddress.js").pubkeyToAddress
 
 const delaySec = s => new Promise(res => setTimeout(res, s * 1000));
 
-const saveToAwsS3 = (bucket, fileName, fileData) => {
+const saveToAwsS3 = async (bucket, fileName, fileData) => {
     const AWS = require("aws-sdk");
     // the bucket already exists
 
@@ -347,6 +347,6 @@ const processSmartChain = async (name, start) => {
     }
 
     console.log(JSON.stringify(notaryData))
-    saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
+    await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
 
 })();
