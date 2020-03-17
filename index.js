@@ -276,7 +276,7 @@ const processSmartChain = async (name, start) => {
     } catch (error) {
         console.error(`error: ${error}`);
     }
-
+    //
     try {
         let state = await State.create({
             name: "lastBlock",
