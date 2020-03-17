@@ -369,7 +369,7 @@ const processSmartChain = async (name, start) => {
         await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
         console.log(`
         --------------------------------------------------------------------------------------
-        [Loop No: ${}] waiting 30 seconds before carrying on the next update                 
+        [Loop No: ${loopCount}] waiting 30 seconds before carrying on the next update                 
         --------------------------------------------------------------------------------------`)
         await delaySec(30)
         loopCount = loopCount + 1
