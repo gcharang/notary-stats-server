@@ -294,18 +294,14 @@ const processSmartChain = async (name, start) => {
         let chainName = Object.keys(chain)[0]
         let start = chain[chainName]
         await processSmartChain(chainName, start)
-        /*notaryData.forEach(function (notary, index) {
-            const timeStampLastNota = moment(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            // notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
-            this[index][`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
-            console.log(moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true))
-            console.log(`srcArray[index][----]: ${notaryData[index][`timeSince${chainName}`]}`)
-        }, notaryData); */
         notaryData = notaryData.map(notary => {
             if (notary instanceof NotariesList) {
                 notary = notary.toJSON()
             }
             const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
+            if (notary.name == "Alright") {
+                console.log(timeStampLastNota)
+            }
             notary[`timeSince${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
             // console.log(moment.duration(timeStampLastNota.diff(momentNow)))
             return notary
