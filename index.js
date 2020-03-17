@@ -307,21 +307,13 @@ const processSmartChain = async (name, start) => {
             }
             const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
             notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(momentNow)).humanize(true)
-            // console.log(moment.duration(timeStampLastNota.diff(momentNow)).humanize(true))
-            //console.log(notary)
+            console.log(moment.duration(timeStampLastNota.diff(momentNow)))
             return notary
         });
     }
-    /*
-    await processSmartChain("TXSCLAPOW", 0)
-    await processSmartChain("MORTY", 303000)
-    await processSmartChain("RICK", 303000)
-    */
-
-
 
     console.log(JSON.stringify(notaryData))
-    isIns
+
 
 })();
 
