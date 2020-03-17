@@ -299,14 +299,17 @@ const processSmartChain = async (name, start) => {
                 notary = notary.toJSON()
             }
             const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            if (notary.name == "Alright") {
-                console.log(timeStampLastNota.isValid())
-            }
-            notary[`timeSince${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
+            const notaTxId = notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
+            notary[`notaTimeStamp${chainName}`] = timeStampLastNota
+            notary[`timeSinceNota${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
+            delete notary[`last${chainName}NotaTxnIdStamp`]
+            notary[`last${chainName}NotaTxnId`] = notaTxId
             if (!timeStampLastNota.isValid()) {
-                notary[`timeSince${chainName}`] = "Never"
+                notary[`timeSinceNota${chainName}`] = "Never"
+                notary[`notaTimeStamp${chainName}`] = "None"
+                notary[`last${chainName}NotaTxnId`] = "None"
             }
-            console.log(notary[`timeSince${chainName}`])
+
             return notary
         });
     }
