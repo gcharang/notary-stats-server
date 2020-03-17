@@ -249,8 +249,8 @@ const processSmartChain = async (name, start) => {
     }
 }
 (async () => {
+    let loopCount = 0
     while (true) {
-
         await Transactions.sync();
         await NotariesList.sync();
         await State.sync();
@@ -367,9 +367,11 @@ const processSmartChain = async (name, start) => {
 
         console.log(JSON.stringify(notaryData))
         await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
-        console.log(`--------------------------------------------------
-        waiting 1 minute before carrying on the next update                
-        ---------------------------------------------------`)
-        await delaySec(60)
+        console.log(`
+        --------------------------------------------------------------------------------------
+        [Loop No: ${}] waiting 30 seconds before carrying on the next update                 
+        --------------------------------------------------------------------------------------`)
+        await delaySec(30)
+        loopCount = loopCount + 1
     }
 })();
