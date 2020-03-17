@@ -299,10 +299,11 @@ const processSmartChain = async (name, start) => {
                 notary = notary.toJSON()
             }
             const timeStampLastNota = moment.unix(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
-            if (notary.name == "Alright") {
-                console.log(timeStampLastNota)
-            }
+
             notary[`timeSince${chainName}`] = Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()) < 45 ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) : moment.duration(timeStampLastNota.diff(momentNow)).humanize(true) + ` (${Math.round(Math.abs(moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()))} minutes)`
+            if (!timeStampLastNota.isValid()) {
+                notary[`timeSince${chainName}`] = "Never"
+            }
             // console.log(moment.duration(timeStampLastNota.diff(momentNow)))
             return notary
         });
