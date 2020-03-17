@@ -2,11 +2,44 @@ const Sequelize = require('sequelize');
 const SmartChain = require("node-komodo-rpc");
 const axios = require("axios")
 const moment = require("moment")
+import * as authsAws from "./creds.js"
 
 const pubkeyToAddress = require("./pubkeyToAddress.js").pubkeyToAddress
 
 const delaySec = s => new Promise(res => setTimeout(res, s * 1000));
 
+const saveToAwsS3 = (bucket, fileName, fileData) => {
+    const AWS = require("aws-sdk");
+    // the bucket already exists
+
+    const apiVersion = "2006-03-01";
+    const { accessKeyId, secretAccessKey } = authsAws;
+    AWS.config.update({
+        region: "us-east-2"
+    });
+
+    const s3 = new AWS.S3({
+        apiVersion,
+        accessKeyId,
+        secretAccessKey
+    });
+
+    const uploadParams = {
+        Bucket: bucket,
+        Key: fileName,
+        Body: fileData,
+        ACL: "public-read",
+        ContentType: "json"
+    };
+
+    try {
+        let fileLocation = await s3.upload(uploadParams).promise();
+        console.log("Upload Success fileLocation:", fileLocation.Location);
+    } catch (err) {
+        console.log("Error", err);
+    }
+
+}
 
 const sequelize = new Sequelize('database', 'user', 'password', {
     host: 'localhost',
@@ -136,7 +169,6 @@ const addTxnToDb = async (transactionData, chainName) => {
                             txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
                         }
                     })
-                    //      console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
 
                     if (parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)) {
                         notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
@@ -315,10 +347,6 @@ const processSmartChain = async (name, start) => {
     }
 
     console.log(JSON.stringify(notaryData))
-
+    saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
 
 })();
-/*
-
-
-*/
