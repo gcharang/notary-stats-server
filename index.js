@@ -292,13 +292,13 @@ const processSmartChain = async (name, start) => {
         let chainName = Object.keys(chain)[0]
         let start = chain[chainName]
         await processSmartChain(chainName, start)
-        notaryData.forEach(function (notary, index, srcArray) {
+        notaryData.forEach(function (notary, index) {
             const timeStampLastNota = moment(parseInt(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1]))
             // notary[`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
-            srcArray[index][`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
+            this[index][`timeSince${chainName}`] = moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true)
             console.log(moment.duration(timeStampLastNota.diff(moment().unix())).humanize(true))
-            console.log(`srcArray[index][----]: ${srcArray[index][`timeSince${chainName}`]}`)
-        });
+            console.log(`srcArray[index][----]: ${notaryData[index][`timeSince${chainName}`]}`)
+        }, notaryData);
     }
     /*
     await processSmartChain("TXSCLAPOW", 0)
