@@ -1,3 +1,10 @@
+/*
+Run with
+```
+node index.js 2>&1 | tee -a $HOME/cron.log
+```
+*/
+
 const Sequelize = require('sequelize');
 const SmartChain = require("node-komodo-rpc");
 const axios = require("axios")
@@ -364,7 +371,5 @@ const processSmartChain = async (name, start) => {
         waiting 1 minute before carrying on the next update                
         ---------------------------------------------------`)
         await delaySec(60)
-
-
     }
 })();
