@@ -130,19 +130,23 @@ const addTxnToDb = async (transactionData, chainName) => {
                     }
                 });
                 await notary.increment(chainName)
-                console.log(`notary[-----------].split(",")[0]: ${notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]}`)
+                if (notary[`last${chainName}NotaTxnIdStamp`]) {
+                    const oldNotaTxn = await Transactions.findOne({
+                        where: {
+                            txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
+                        }
+                    })
+                    console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
 
-                const oldNotaTxn = await Transactions.findOne({
-                    where: {
-                        txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
+                    if (parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)) {
+                        notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
+                        await notary.save()
                     }
-                })
-                console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
-
-                if (parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)) {
+                } else {
                     notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
                     await notary.save()
                 }
+
 
             } catch (error) {
                 console.log(`Something went wrong when incrementing Notarization count of "${addr}" \n` + error);
