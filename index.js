@@ -276,7 +276,7 @@ const processSmartChain = async (name, start) => {
     } catch (error) {
         console.error(`error: ${error}`);
     }
-    //
+
     try {
         let state = await State.create({
             name: "lastBlock",
@@ -341,6 +341,17 @@ const processSmartChain = async (name, start) => {
                 notary[`notaTimeStamp${chainName}`] = "None"
                 notary[`last${chainName}NotaTxnId`] = "None"
             }
+            let chainData = {
+                totalNotas: notary[`${chainName}`],
+                lastNotaTimeStamp: notary[`notaTimeStamp${chainName}`],
+                lastNotaTxnId: notary[`last${chainName}NotaTxnId`],
+                timeSinceLastNota: notary[`timeSinceNota${chainName}`]
+            }
+            notary[`${chainName}`] = chainData
+
+            delete notary[`timeSinceNota${chainName}`]
+            delete notary[`notaTimeStamp${chainName}`]
+            delete notary[`last${chainName}NotaTxnId`]
 
             return notary
         });
