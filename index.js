@@ -136,7 +136,7 @@ const addTxnToDb = async (transactionData, chainName) => {
                             txid: notary[`last${chainName}NotaTxnIdStamp`].split(",")[0]
                         }
                     })
-                    console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
+                    //      console.log(`oldNotaTxn.unixTimestamp: ${oldNotaTxn.unixTimestamp}, transaction.unixTimestamp: ${transaction.unixTimestamp}, oldNotaTxn.unixTimestamp < transaction.unixTimestamp: ${parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)}`)
 
                     if (parseInt(oldNotaTxn.unixTimestamp) < parseInt(transaction.unixTimestamp)) {
                         notary[`last${chainName}NotaTxnIdStamp`] = transaction.txid + "," + transaction.unixTimestamp
@@ -286,15 +286,24 @@ const processSmartChain = async (name, start) => {
             console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
         }
     }
+    let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
+    const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
+    for (const chain of SmartChains) {
+        let chainName = Object.keys(chain)[0]
+        let start = chain[name]
+        await processSmartChain(chainName, start)
+        notaryData.forEach((notary, index, srcArray) => {
+            const timeStampLastNota = moment(notary[`last${chainName}NotaTxnIdStamp`].split(",")[1])
+            srcArray[index][`timeSince${chainName}`] = timeStampLastNota.diff(moment().unix())
+        });
+    }
+    /*
     await processSmartChain("TXSCLAPOW", 0)
     await processSmartChain("MORTY", 303000)
     await processSmartChain("RICK", 303000)
+    */
 
-    let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
-    notaryData.forEach((notary, index, srcArray) => {
-        const timeStampLastRICKNota = moment(notary.lastRICKNotaTxnIdStamp.split(",")[1])
-        srcArray[index].timeSinceRICK = timeStampLastRICKNota.diff(moment().unix())
-    });
+
 
     console.log(JSON.stringify(notaryData))
 
