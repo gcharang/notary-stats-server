@@ -364,8 +364,16 @@ const processSmartChain = async (name, start) => {
                 return notary
             });
         }
+        let rickData = await Transactions.findAll({
+            where: {
+                chain: RICK
+            }
+        })
+        console.log(`total rick notas: ${rickData.length}`)
+
 
         console.log(JSON.stringify(notaryData))
+        console.log(`total rick notas: ${rickData.length}`)
         await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
         console.log(`
         --------------------------------------------------------------------------------------
