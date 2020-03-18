@@ -366,7 +366,7 @@ const processSmartChain = async (name, start) => {
         }
         let rickData = await Transactions.findAll({
             where: {
-                chain: RICK
+                chain: "RICK"
             }
         })
         console.log(`total rick notas: ${rickData.length}`)
