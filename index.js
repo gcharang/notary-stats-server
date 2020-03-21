@@ -326,14 +326,17 @@ const processSmartChain = async (name, start) => {
                 console.log(`Something went wrong with adding state: "${state.name}" to the State db.\n` + e);
             }
         }
-        let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
         const SmartChains = [{ TXSCLAPOW: 0 }, { MORTY: 303000 }, { RICK: 303000 }]
-
-        let momentNow = moment()
         for (const chain of SmartChains) {
             let chainName = Object.keys(chain)[0]
             let start = chain[chainName]
             await processSmartChain(chainName, start)
+        }
+        let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
+
+        let momentNow = moment()
+        for (const chain of SmartChains) {
+            let chainName = Object.keys(chain)[0]
             notaryData = notaryData.map(notary => {
                 if (notary instanceof NotariesList) {
                     notary = notary.toJSON()
