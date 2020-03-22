@@ -334,6 +334,7 @@ const processSmartChain = async (name, start) => {
         }
         let notaryData = await NotariesList.findAll({ attributes: ["name", "address", "RICK", "MORTY", "TXSCLAPOW", "lastRICKNotaTxnIdStamp", "lastMORTYNotaTxnIdStamp", "lastTXSCLAPOWNotaTxnIdStamp"] })
 
+
         let momentNow = moment()
         for (const chain of SmartChains) {
             let chainName = Object.keys(chain)[0]
@@ -367,12 +368,49 @@ const processSmartChain = async (name, start) => {
                 return notary
             });
         }
-
+        let chainTxnCounts = {}
+        for (const chain of SmartChains) {
+            let chainName = Object.keys(chain)[0]
+            let txnData = await Transactions.findAll({
+                attributes: ["notaries", "unixTimestamp", "txid"], where: {
+                    chain: chainName
+                }
+            })
+            let txnCountNotaries = {}
+            for (const notary of notaryData) {
+                let txnCount = { "24": 0, "72": 0, "168": 0 }
+                txnData.forEach(txn => {
+                    const timeStamp = moment.unix(parseInt(txn.unixTimestamp))
+                    const timeDiff = Math.abs(moment.duration(timeStamp.diff(momentNow)).asHours())
+                    if (notary.name in txn.notaries) {
+                        if (timeDiff < 24) {
+                            txnCount["24"]++
+                            txnCount["72"]++
+                            txnCount["168"]++
+                        } else if (timeDiff < 72) {
+                            txnCount["72"]++
+                            txnCount["168"]++
+                        } else if (timeDiff < 168) {
+                            txnCount["168"]++
+                        }
+                    }
+                });
+                txnCountNotaries[notary.name] = txnCount
+            }
+            chainTxnCounts[chainName] = txnCountNotaries
+        }
+        notaryData = notaryData.map(notary => {
+            let name = notary.name
+            for (const chain of SmartChains) {
+                let chainName = Object.keys(chain)[0]
+                notary[chainName]["pastCounts"] = chainTxnCounts[chainName][name]
+            }
+        })
 
 
         console.log(JSON.stringify(notaryData))
 
-        await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
+        // await saveToAwsS3("kmd-data", "notary-stats-2020/main.json", JSON.stringify(notaryData))
         console.log(`
         --------------------------------------------------------------------------------------
         [Loop No: ${loopCount}] waiting 30 seconds before carrying on the next update                 
