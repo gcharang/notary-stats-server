@@ -382,7 +382,7 @@ const processSmartChain = async (name, start) => {
                 txnData.forEach(txn => {
                     const timeStamp = moment.unix(parseInt(txn.unixTimestamp))
                     const timeDiff = Math.abs(moment.duration(timeStamp.diff(momentNow)).asHours())
-                    if (notary.address in txn.notaries) {
+                    if (txn.notaries.includes(notary.address)) {
                         if (timeDiff < 24) {
                             txnCount["24"]++
                             txnCount["72"]++
