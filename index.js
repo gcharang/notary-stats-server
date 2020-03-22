@@ -404,6 +404,7 @@ const processSmartChain = async (name, start) => {
             for (const chain of SmartChains) {
                 let chainName = Object.keys(chain)[0]
                 notary[chainName]["pastCounts"] = chainTxnCounts[chainName][name]
+                return notary
             }
         })
 
