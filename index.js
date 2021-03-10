@@ -360,8 +360,8 @@ const processSmartChain = async (name, start) => {
       }
     }
     const SmartChains = [
-      ,
-      /*{ TXSCLAPOW: 0 }*/ { MORTY: 830000 },
+      /*{ TXSCLAPOW: 0 },*/
+      { MORTY: 830000 },
       { RICK: 830000 },
     ];
     for (const chain of SmartChains) {
