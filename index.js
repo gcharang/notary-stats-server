@@ -474,11 +474,11 @@ const processSmartChain = async (name, start) => {
 
     console.log(JSON.stringify(notaryData));
 
-    // await saveToAwsS3(
-    //   "kmd-data",
-    //   "notary-stats-2020/main.json",
-    //   JSON.stringify(notaryData)
-    // );
+    await saveToAwsS3(
+      "kmd-data",
+      "notary-stats-2021/main.json",
+      JSON.stringify(notaryData)
+    );
     console.log(`
         --------------------------------------------------------------------------------------
         [Loop No: ${loopCount}] waiting 30 seconds before carrying on the next update                 
