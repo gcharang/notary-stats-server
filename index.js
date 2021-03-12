@@ -466,12 +466,12 @@ const processSmartChain = async (name, start) => {
     }
     notaryData = notaryData.map((notary) => {
       let name = notary.name;
-      notary["chains"] = [];
+      //notary["chains"] = [];
       for (const chain of SmartChains) {
         let chainName = Object.keys(chain)[0];
         notary[chainName]["pastCounts"] = chainTxnCounts[chainName][name];
-        notary["chains"].push(notary[chainName]);
-        delete notary[chainName];
+        // notary["chains"].push(notary[chainName]);
+        // delete notary[chainName];
       }
       return notary;
     });
