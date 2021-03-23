@@ -361,8 +361,8 @@ const processSmartChain = async (name, start) => {
     }
     const SmartChains = [
       /*{ TXSCLAPOW: 0 },*/
-      { MORTY: 853998 }, //2021 - initial: 830000
-      { RICK: 857998 }, // 2021 - initial: 830000
+      { MORTY: 857998 }, //2021 - initial: 830000
+      { RICK: 854018 }, // 2021 - initial: 830000
     ];
     for (const chain of SmartChains) {
       let chainName = Object.keys(chain)[0];
