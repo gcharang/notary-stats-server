@@ -127,7 +127,7 @@ const isNotarizationTxn = async (transactionData) => {
       : JSON.parse(transactionData);
 
   const isCorrectNumVins =
-    1 < transactionDataObj.vin.length && transactionDataObj.vin.length < 13;
+    1 < transactionDataObj.vin.length && transactionDataObj.vin.length < 15;
   let isAllVinsNotaries = true;
 
   for (const utxo of transactionDataObj.vin) {
