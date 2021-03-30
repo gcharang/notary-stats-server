@@ -231,9 +231,15 @@ const addTxnToDb = async (transactionData, chainName) => {
 
 const processSmartChain = async (name, start) => {
   try {
-    const chain = new SmartChain({
-      name: name,
-    });
+    let chain;
+    if (name == "KMD") {
+      chain = new SmartChain();
+    } else {
+      chain = new SmartChain({
+        name: name,
+      });
+    }
+
     const lastBlock = await State.findOne({
       where: {
         name: "lastBlock",
