@@ -95,18 +95,18 @@ const NotariesList = sequelize.define("notariesList", {
     type: Sequelize.STRING,
     defaultValue: "",
   },
-  // TXSCLAPOW: {
-  //     type: Sequelize.INTEGER,
-  //     defaultValue: '0'
-  // },
-  // lastTXSCLAPOWNotaTxnIdStamp: {
-  //     type: Sequelize.STRING,
-  //     defaultValue: ''
-  // },
   KMD: {
     type: Sequelize.INTEGER,
     defaultValue: "0",
   },
+  lastKMDNotaTxnIdStamp: {
+    type: Sequelize.STRING,
+    defaultValue: "",
+  },
+  // KMD: {
+  //   type: Sequelize.INTEGER,
+  //   defaultValue: "0",
+  // },
 });
 
 const State = sequelize.define("state", {
@@ -116,8 +116,8 @@ const State = sequelize.define("state", {
   },
   RICK: Sequelize.INTEGER,
   MORTY: Sequelize.INTEGER,
-  //  TXSCLAPOW: Sequelize.INTEGER,
   KMD: Sequelize.INTEGER,
+  // KMD: Sequelize.INTEGER,
 });
 
 const isNotarizationTxn = async (transactionData) => {
@@ -325,8 +325,8 @@ const processSmartChain = async (name, start) => {
         name: "lastBlock",
         RICK: 0,
         MORTY: 0,
-        //  TXSCLAPOW: 0,
         KMD: 0,
+        //  KMD: 0,
       });
       console.log(`${state.name} created in State db`);
     } catch (e) {
@@ -345,8 +345,8 @@ const processSmartChain = async (name, start) => {
         name: "totalNotarizations",
         RICK: 0,
         MORTY: 0,
-        //  TXSCLAPOW: 0,
         KMD: 0,
+        //   KMD: 0,
       });
       console.log(`${state.name} created in State db`);
     } catch (e) {
@@ -360,7 +360,7 @@ const processSmartChain = async (name, start) => {
       }
     }
     const SmartChains = [
-      /*{ TXSCLAPOW: 0 },*/
+      { KMD: 2328107 },
       { MORTY: 857998 }, //2021 - initial: 830000
       { RICK: 854018 }, // 2021 - initial: 830000
     ];
@@ -375,10 +375,10 @@ const processSmartChain = async (name, start) => {
         "address",
         "RICK",
         "MORTY",
-        //  "TXSCLAPOW",
+        "KMD",
         "lastRICKNotaTxnIdStamp",
         "lastMORTYNotaTxnIdStamp",
-        //  "lastTXSCLAPOWNotaTxnIdStamp",
+        "lastKMDNotaTxnIdStamp",
       ],
     });
 
