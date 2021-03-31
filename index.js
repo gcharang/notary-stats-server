@@ -164,7 +164,7 @@ const addTxnToDb = async (transactionData, chainName) => {
   if (chainName == "KMD") {
     let opret = transactionDataObj.vout
       .filter((vout) => vout.scriptPubKey.type == "nulldata")[0]
-      .scriptPubkey.asm.split(" ")
+      .scriptPubKey.asm.split(" ")
       .pop();
     // let blockHash = reverseEndianNess(opret.slice(0, 65));
     // let blockHeight = reverseEndianNess(opret.slice(64, 72));
