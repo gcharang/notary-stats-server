@@ -145,6 +145,12 @@ const isNotarizationTxn = async (transactionData) => {
   }
 };
 
+const reverseEndianNess = (str) =>
+  str
+    .match(/[a-fA-F0-9]{2}/g)
+    .reverse()
+    .join("");
+
 const addTxnToDb = async (transactionData, chainName) => {
   const transactionDataObj =
     typeof transactionData === "object" && transactionData !== null
@@ -154,6 +160,20 @@ const addTxnToDb = async (transactionData, chainName) => {
     typeof transactionData === "object" && transactionData !== null
       ? JSON.stringify(transactionData)
       : transactionData;
+
+  if (chainName == "KMD") {
+    let opret = transactionDataObj.vout
+      .filter((vout) => vout.scriptPubKey.type == "nulldata")[0]
+      .scriptPubkey.asm.split(" ")
+      .pop();
+    // let blockHash = reverseEndianNess(opret.slice(0, 65));
+    // let blockHeight = reverseEndianNess(opret.slice(64, 72));
+    // let txId = reverseEndianNess(opret.slice(72, 137));
+    let name = Buffer.from(opret.slice(136, 146), "hex"); //hex to ascii
+    if (!name.startsWith("KMD")) {
+      return;
+    }
+  }
 
   const notaryString = transactionDataObj.vin
     .map((utxo) => utxo.address)
