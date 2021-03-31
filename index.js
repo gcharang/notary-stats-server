@@ -170,7 +170,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     // let blockHeight = reverseEndianNess(opret.slice(64, 72));
     // let txId = reverseEndianNess(opret.slice(72, 137));
     let name = Buffer.from(opret.slice(136, 146), "hex"); //hex to ascii
-    if (!name.startsWith("KMD")) {
+    if (!name.includes("KMD")) {
       return;
     }
   }
