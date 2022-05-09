@@ -224,7 +224,7 @@ const addTxnToDb = async (transactionData, chainName) => {
       } catch (error) {
         console.log(
           `Something went wrong when incrementing Notarization count of "${addr}" \n` +
-            error
+          error
         );
       }
     }
@@ -243,7 +243,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     } else {
       console.log(
         `Something went wrong when dealing with transaction: "${transactionDataObj.txid}"  \n` +
-          e
+        e
       );
     }
   }
@@ -309,7 +309,7 @@ const processSmartChain = async (name, start) => {
 
     try {
       const response = await axios.get(
-        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2021-testnet/iguana/testnet.json"
+        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2022-testnet/iguana/testnet.json"
       );
       const testnetJson =
         typeof response.data === "object" && response.data !== null
@@ -337,7 +337,7 @@ const processSmartChain = async (name, start) => {
           } else {
             console.log(
               `Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` +
-                e
+              e
             );
           }
         }
@@ -361,7 +361,7 @@ const processSmartChain = async (name, start) => {
       } else {
         console.log(
           `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-            e
+          e
         );
       }
     }
@@ -381,14 +381,14 @@ const processSmartChain = async (name, start) => {
       } else {
         console.log(
           `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-            e
+          e
         );
       }
     }
     const SmartChains = [
       { KMD: 2328107 },
-      { MORTY: 857998 }, //2021 - initial: 830000
-      { RICK: 854018 }, // 2021 - initial: 830000
+      { MORTY: 1436310 }, //2021 - initial: 830000 //2022 - initial: 1436310
+      { RICK: 1421864 }, // 2021 - initial: 830000 //2022 - initial: 1421864	
     ];
     for (const chain of SmartChains) {
       let chainName = Object.keys(chain)[0];
@@ -426,13 +426,13 @@ const processSmartChain = async (name, start) => {
           ) < 45
             ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true)
             : moment
-                .duration(timeStampLastNota.diff(momentNow))
-                .humanize(true) +
-              ` (${Math.round(
-                Math.abs(
-                  moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
-                )
-              )} minutes)`;
+              .duration(timeStampLastNota.diff(momentNow))
+              .humanize(true) +
+            ` (${Math.round(
+              Math.abs(
+                moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
+              )
+            )} minutes)`;
         delete notary[`last${chainName}NotaTxnIdStamp`];
         notary[`last${chainName}NotaTxnId`] = notaTxId;
         if (!timeStampLastNota.isValid()) {
@@ -506,7 +506,7 @@ const processSmartChain = async (name, start) => {
 
     await saveToAwsS3(
       "kmd-data",
-      "notary-stats-2021/main.json",
+      "notary-stats-2022/main.json",
       JSON.stringify(notaryData)
     );
     console.log(`
