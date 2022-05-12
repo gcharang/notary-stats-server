@@ -386,9 +386,9 @@ const processSmartChain = async (name, start) => {
       }
     }
     const SmartChains = [
-      { KMD: 2328107 },
-      { MORTY: 1436310 }, //2021 - initial: 830000 //2022 - initial: 1436310
-      { RICK: 1421864 }, // 2021 - initial: 830000 //2022 - initial: 1421864	
+      { KMD: 2903777 },
+      { MORTY: 1442982 }, //2021 - initial: 830000 //2022 - initial: 1436310
+      { RICK: 1428529 }, // 2021 - initial: 830000 //2022 - initial: 1421864	
     ];
     for (const chain of SmartChains) {
       let chainName = Object.keys(chain)[0];
