@@ -79,19 +79,19 @@ const NotariesList = sequelize.define("notariesList", {
   },
   name: Sequelize.STRING,
   address: Sequelize.STRING,
-  RICK: {
+  DOC: {
     type: Sequelize.INTEGER,
     defaultValue: "0",
   },
-  lastRICKNotaTxnIdStamp: {
+  lastDOCNotaTxnIdStamp: {
     type: Sequelize.STRING,
     defaultValue: "",
   },
-  MORTY: {
+  MARTY: {
     type: Sequelize.INTEGER,
     defaultValue: "0",
   },
-  lastMORTYNotaTxnIdStamp: {
+  lastMARTYNotaTxnIdStamp: {
     type: Sequelize.STRING,
     defaultValue: "",
   },
@@ -114,8 +114,8 @@ const State = sequelize.define("state", {
     type: Sequelize.STRING, // lastBlock, totalNotarizations,
     unique: true,
   },
-  RICK: Sequelize.INTEGER,
-  MORTY: Sequelize.INTEGER,
+  DOC: Sequelize.INTEGER,
+  MARTY: Sequelize.INTEGER,
   KMD: Sequelize.INTEGER,
   // KMD: Sequelize.INTEGER,
 });
@@ -309,7 +309,7 @@ const processSmartChain = async (name, start) => {
 
     try {
       const response = await axios.get(
-        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2022-testnet/iguana/testnet.json"
+        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2023-testnet/iguana/testnet.json"
       );
       const testnetJson =
         typeof response.data === "object" && response.data !== null
@@ -349,8 +349,8 @@ const processSmartChain = async (name, start) => {
     try {
       let state = await State.create({
         name: "lastBlock",
-        RICK: 0,
-        MORTY: 0,
+        DOC: 0,
+        MARTY: 0,
         KMD: 0,
         //  KMD: 0,
       });
@@ -369,8 +369,8 @@ const processSmartChain = async (name, start) => {
     try {
       let state = await State.create({
         name: "totalNotarizations",
-        RICK: 0,
-        MORTY: 0,
+        DOC: 0,
+        MARTY: 0,
         KMD: 0,
         //   KMD: 0,
       });
@@ -386,9 +386,9 @@ const processSmartChain = async (name, start) => {
       }
     }
     const SmartChains = [
-      { KMD: 2903777 },
-      { MORTY: 1442982 }, //2021 - initial: 830000 //2022 - initial: 1436310
-      { RICK: 1428529 }, // 2021 - initial: 830000 //2022 - initial: 1421864	
+      { KMD: 3378324 },
+      { MARTY: 0 }, //2021 - initial: 830000 morty //2022 - initial: 1436310 morty // 2023 - initial marty
+      { DOC: 0 }, // 2021 - initial: 830000 rick //2022 - initial: 1421864	rick // 2023 - initial doc
     ];
     for (const chain of SmartChains) {
       let chainName = Object.keys(chain)[0];
@@ -399,11 +399,11 @@ const processSmartChain = async (name, start) => {
       attributes: [
         "name",
         "address",
-        "RICK",
-        "MORTY",
+        "DOC",
+        "MARTY",
         "KMD",
-        "lastRICKNotaTxnIdStamp",
-        "lastMORTYNotaTxnIdStamp",
+        "lastDOCNotaTxnIdStamp",
+        "lastMARTYNotaTxnIdStamp",
         "lastKMDNotaTxnIdStamp",
       ],
     });
@@ -511,7 +511,7 @@ const processSmartChain = async (name, start) => {
     );
     console.log(`
         --------------------------------------------------------------------------------------
-        [Loop No: ${loopCount}] waiting 30 seconds before carrying on the next update                 
+        [Loop No: ${loopCount}] waiting 30 seconds before running the next update                 
         --------------------------------------------------------------------------------------`);
     await delaySec(30);
     loopCount = loopCount + 1;
