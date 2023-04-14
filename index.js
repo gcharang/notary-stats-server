@@ -506,7 +506,7 @@ const processSmartChain = async (name, start) => {
 
     await saveToAwsS3(
       "kmd-data",
-      "notary-stats-2022/main.json",
+      "notary-stats-2023/main.json",
       JSON.stringify(notaryData)
     );
     console.log(`
