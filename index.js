@@ -514,9 +514,9 @@ const processSmartChain = async (name, start) => {
       voteData.categories[region].options.forEach((option) => {
         if (option.testnet.length > 0) {
           candidatesWithTestnet[option.testnet]
-            ? candidatesWithTestnet[option.testnet].push([
+            ? candidatesWithTestnet[option.testnet].push(
                 `${option.candidate}_${region}`,
-              ])
+              )
             : (candidatesWithTestnet[option.testnet] = [
                 `${option.candidate}_${region}`,
               ]);
