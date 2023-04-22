@@ -437,8 +437,8 @@ const processSmartChain = async (name, start) => {
         notary[`last${chainName}NotaTxnId`] = notaTxId;
         if (!timeStampLastNota.isValid()) {
           notary[`timeSinceNota${chainName}`] = "Never";
-          notary[`notaTimeStamp${chainName}`] = "None";
-          notary[`last${chainName}NotaTxnId`] = "None";
+          notary[`notaTimeStamp${chainName}`] = "";
+          notary[`last${chainName}NotaTxnId`] = "";
         }
         let chainData = {
           name: `${chainName}`,
@@ -512,7 +512,7 @@ const processSmartChain = async (name, start) => {
         : JSON.parse(voteRes.data);
     for (const region in voteData.categories) {
       voteData.categories[region].options.forEach((option) => {
-        if (option.testnet.length > 0) {
+        if (option.testnet && option.testnet.length > 0) {
           candidatesWithTestnet[option.testnet]
             ? candidatesWithTestnet[option.testnet].push(
                 `${option.candidate}_${region}`,
