@@ -436,7 +436,7 @@ const processSmartChain = async (name, start) => {
         delete notary[`last${chainName}NotaTxnIdStamp`];
         notary[`last${chainName}NotaTxnId`] = notaTxId;
         if (!timeStampLastNota.isValid()) {
-          notary[`timeSinceNota${chainName}`] = "Never";
+          notary[`timeSinceNota${chainName}`] = "";
           notary[`notaTimeStamp${chainName}`] = "";
           notary[`last${chainName}NotaTxnId`] = "";
         }
