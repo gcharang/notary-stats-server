@@ -502,6 +502,35 @@ const processSmartChain = async (name, start) => {
       return notary;
     });
 
+    let candidatesWithTestnet = {};
+    const voteRes = await axios.get(
+      "https://testapi.dragonhound.info/api/v3/VOTE2023/info"
+    );
+    const voteData =
+      typeof voteRes.data === "object" && voteRes.data !== null
+        ? voteRes.data
+        : JSON.parse(voteRes.data);
+    for (const region in voteData.categories) {
+      voteData.categories[region].options.forEach((option) => {
+        if (option.testnet.length > 0) {
+          candidatesWithTestnet[option.testnet]
+            ? candidatesWithTestnet[option.testnet].push([
+                `${option.candidate}_${region}`,
+              ])
+            : (candidatesWithTestnet[option.testnet] = [
+                `${option.candidate}_${region}`,
+              ]);
+        }
+      });
+    }
+     notaryData = notaryData.map((participant) => {
+      participant.electionSpots =
+        participant.name in candidatesWithTestnet
+          ? candidatesWithTestnet[participant.name]
+          : [];
+      return participant
+    });
+
     console.log(JSON.stringify(notaryData));
 
     await saveToAwsS3(
