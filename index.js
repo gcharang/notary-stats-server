@@ -504,7 +504,7 @@ const processSmartChain = async (name, start) => {
 
     let candidatesWithTestnet = {};
     const voteRes = await axios.get(
-      "https://testapi.dragonhound.info/api/v3/VOTE2023/info"
+      "https://testapi.dragonhound.info/api/v3/polls/VOTE2023/info"
     );
     const voteData =
       typeof voteRes.data === "object" && voteRes.data !== null
