@@ -536,7 +536,7 @@ const processSmartChain = async (name, start) => {
           : [];
       participant.veteran =
         participant.name in candidatesWithTestnet
-          ? candidatesWithTestnet[participant.name].isVeteran
+          ? candidatesWithTestnet[participant.name].isVeteran ?? false
           : false;
       return participant;
     });
