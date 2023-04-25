@@ -524,7 +524,7 @@ const processSmartChain = async (name, start) => {
             ]}  );            
           })
           if (option.veteran) {
-            candidatesWithTestnet.isVeteran = true
+            candidatesWithTestnet[testnetName].isVeteran = true
           }
         }
       });
