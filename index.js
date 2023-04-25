@@ -224,7 +224,7 @@ const addTxnToDb = async (transactionData, chainName) => {
       } catch (error) {
         console.log(
           `Something went wrong when incrementing Notarization count of "${addr}" \n` +
-          error
+            error
         );
       }
     }
@@ -243,7 +243,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     } else {
       console.log(
         `Something went wrong when dealing with transaction: "${transactionDataObj.txid}"  \n` +
-        e
+          e
       );
     }
   }
@@ -337,7 +337,7 @@ const processSmartChain = async (name, start) => {
           } else {
             console.log(
               `Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` +
-              e
+                e
             );
           }
         }
@@ -361,7 +361,7 @@ const processSmartChain = async (name, start) => {
       } else {
         console.log(
           `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-          e
+            e
         );
       }
     }
@@ -381,7 +381,7 @@ const processSmartChain = async (name, start) => {
       } else {
         console.log(
           `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-          e
+            e
         );
       }
     }
@@ -426,13 +426,13 @@ const processSmartChain = async (name, start) => {
           ) < 45
             ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true)
             : moment
-              .duration(timeStampLastNota.diff(momentNow))
-              .humanize(true) +
-            ` (${Math.round(
-              Math.abs(
-                moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
-              )
-            )} minutes)`;
+                .duration(timeStampLastNota.diff(momentNow))
+                .humanize(true) +
+              ` (${Math.round(
+                Math.abs(
+                  moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
+                )
+              )} minutes)`;
         delete notary[`last${chainName}NotaTxnIdStamp`];
         notary[`last${chainName}NotaTxnId`] = notaTxId;
         if (!timeStampLastNota.isValid()) {
@@ -503,7 +503,7 @@ const processSmartChain = async (name, start) => {
     });
 
     let candidatesWithTestnet = {};
-    let veteransInTestnet = {}
+    let veteransInTestnet = {};
     const voteRes = await axios.get(
       "https://kip0001.smk.dog/api/v3/polls/VOTE2023/info"
     );
@@ -514,28 +514,30 @@ const processSmartChain = async (name, start) => {
     for (const region in voteData.categories) {
       voteData.categories[region].options.forEach((option) => {
         if (option.testnet && option.testnet.length > 0) {
-          option.testnet.forEach(testnetName => {
+          option.testnet.forEach((testnetName) => {
             candidatesWithTestnet[testnetName]
-            ? candidatesWithTestnet[testnetName].electionSpots.push(
-                `${option.candidate}_${region}`,
-              )
-            : (candidatesWithTestnet[testnetName] = {electionSpots: [
-              `${option.candidate}_${region}`,
-            ]}  );            
-          })
-          if (option.veteran) {
-            candidatesWithTestnet[testnetName].isVeteran = true
-          }
+              ? candidatesWithTestnet[testnetName].electionSpots.push(
+                  `${option.candidate}_${region}`
+                )
+              : (candidatesWithTestnet[testnetName] = {
+                  electionSpots: [`${option.candidate}_${region}`],
+                });
+            if (option.veteran) {
+              candidatesWithTestnet[testnetName].isVeteran = true;
+            }
+          });
         }
       });
     }
-     notaryData = notaryData.map((participant) => {
+    notaryData = notaryData.map((participant) => {
       participant.electionSpots =
         participant.name in candidatesWithTestnet
           ? candidatesWithTestnet[participant.name].electionSpots
           : [];
-          participant.veteran = participant.name in candidatesWithTestnet && candidatesWithTestnet[participant.name].isVeteran
-      return participant
+      participant.veteran =
+        participant.name in candidatesWithTestnet &&
+        candidatesWithTestnet[participant.name].isVeteran;
+      return participant;
     });
 
     console.log(JSON.stringify(notaryData));
