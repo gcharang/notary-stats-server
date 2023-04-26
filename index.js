@@ -502,46 +502,51 @@ const processSmartChain = async (name, start) => {
       return notary;
     });
 
-    let candidatesWithTestnet = {};
-    let veteransInTestnet = {};
-    const voteRes = await axios.get(
-      "https://kip0001.smk.dog/api/v3/polls/VOTE2023/info"
-    );
-    const voteData =
-      typeof voteRes.data === "object" && voteRes.data !== null
-        ? voteRes.data
-        : JSON.parse(voteRes.data);
-    for (const region in voteData.categories) {
-      voteData.categories[region].options.forEach((option) => {
-        if (option.testnet && option.testnet.length > 0) {
-          option.testnet.forEach((testnetName) => {
-            candidatesWithTestnet[testnetName]
-              ? candidatesWithTestnet[testnetName].electionSpots.push(
-                  `${option.candidate}_${region}`
-                )
-              : (candidatesWithTestnet[testnetName] = {
-                  electionSpots: [`${option.candidate}_${region}`],
-                });
-            if (option.veteran) {
-              candidatesWithTestnet[testnetName].isVeteran = true;
-            }
-          });
-        }
-      });
-    }
-    notaryData = notaryData.map((participant) => {
-      participant.electionSpots =
-        participant.name in candidatesWithTestnet
-          ? candidatesWithTestnet[participant.name].electionSpots
-          : [];
-      participant.veteran =
-        participant.name in candidatesWithTestnet
-          ? candidatesWithTestnet[participant.name].isVeteran
+    try {
+      let candidatesWithTestnet = {};
+
+      const voteRes = await axios.get(
+        "https://kip0001.smk.dog/api/v3/polls/VOTE2023/info"
+      );
+
+      const voteData =
+        typeof voteRes.data === "object" && voteRes.data !== null
+          ? voteRes.data
+          : JSON.parse(voteRes.data);
+      for (const region in voteData.categories) {
+        voteData.categories[region].options.forEach((option) => {
+          if (option.testnet && option.testnet.length > 0) {
+            option.testnet.forEach((testnetName) => {
+              candidatesWithTestnet[testnetName]
+                ? candidatesWithTestnet[testnetName].electionSpots.push(
+                    `${option.candidate}_${region}`
+                  )
+                : (candidatesWithTestnet[testnetName] = {
+                    electionSpots: [`${option.candidate}_${region}`],
+                  });
+              if (option.veteran) {
+                candidatesWithTestnet[testnetName].isVeteran = true;
+              }
+            });
+          }
+        });
+      }
+      notaryData = notaryData.map((participant) => {
+        participant.electionSpots =
+          participant.name in candidatesWithTestnet
+            ? candidatesWithTestnet[participant.name].electionSpots
+            : [];
+        participant.veteran =
+          participant.name in candidatesWithTestnet
             ? candidatesWithTestnet[participant.name].isVeteran
-            : false
-          : false;
-      return participant;
-    });
+              ? candidatesWithTestnet[participant.name].isVeteran
+              : false
+            : false;
+        return participant;
+      });
+    } catch (error) {
+      console.error(`error: ${error}`);
+    }
 
     console.log(JSON.stringify(notaryData));
 
