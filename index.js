@@ -253,7 +253,10 @@ const processSmartChain = async (name, start) => {
   try {
     let chain;
     if (name == "KMD") {
-      chain = new SmartChain();
+      //chain = new SmartChain();
+      chain = new SmartChain({
+        datadir: "/home/gcharang/.komodo-hfnet"
+      });
     } else {
       chain = new SmartChain({
         name: name,
@@ -309,7 +312,7 @@ const processSmartChain = async (name, start) => {
 
     try {
       const response = await axios.get(
-        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2024-testnet/iguana/testnet.json"
+        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2024-testnet/iguana/testnet2024"
       );
       const testnetJson =
         typeof response.data === "object" && response.data !== null
@@ -386,7 +389,7 @@ const processSmartChain = async (name, start) => {
       }
     }
     const SmartChains = [
-      { KMD: 3973890 },
+      { KMD: 3945000 },
       { MARTY: 614824 }, //2021 - initial: 830000 morty //2022 - initial: 1436310 morty // 2023 - initial 12228 marty // 2024 - initial 614824 marty
       { DOC: 600258 }, // 2021 - initial: 830000 rick //2022 - initial: 1421864	rick // 2023 - initial 12089 doc // 2024 - initial 600258 doc
     ];
