@@ -224,7 +224,7 @@ const addTxnToDb = async (transactionData, chainName) => {
       } catch (error) {
         console.log(
           `Something went wrong when incrementing Notarization count of "${addr}" \n` +
-            error
+          error
         );
       }
     }
@@ -243,7 +243,7 @@ const addTxnToDb = async (transactionData, chainName) => {
     } else {
       console.log(
         `Something went wrong when dealing with transaction: "${transactionDataObj.txid}"  \n` +
-          e
+        e
       );
     }
   }
@@ -309,7 +309,7 @@ const processSmartChain = async (name, start) => {
 
     try {
       const response = await axios.get(
-        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2023-testnet/iguana/testnet.json"
+        "https://raw.githubusercontent.com/KomodoPlatform/dPoW/2024-testnet/iguana/testnet.json"
       );
       const testnetJson =
         typeof response.data === "object" && response.data !== null
@@ -337,7 +337,7 @@ const processSmartChain = async (name, start) => {
           } else {
             console.log(
               `Something went wrong with adding notary: "${notaryName} (${address})" to the notary db.\n` +
-                e
+              e
             );
           }
         }
@@ -360,8 +360,8 @@ const processSmartChain = async (name, start) => {
         console.log(`"lastBlock" already exists in the State db.`);
       } else {
         console.log(
-          `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-            e
+          `Something went wrong with adding state: "lastBlock" to the State db.\n` +
+          e
         );
       }
     }
@@ -380,15 +380,15 @@ const processSmartChain = async (name, start) => {
         console.log(`"totalNotarizations" already exists in the State db.`);
       } else {
         console.log(
-          `Something went wrong with adding state: "${state.name}" to the State db.\n` +
-            e
+          `Something went wrong with adding state: "totalNotarizations" to the State db.\n` +
+          e
         );
       }
     }
     const SmartChains = [
-      { KMD: 3388537 },
-      { MARTY: 12228 }, //2021 - initial: 830000 morty //2022 - initial: 1436310 morty // 2023 - initial 12228 marty
-      { DOC: 12089 }, // 2021 - initial: 830000 rick //2022 - initial: 1421864	rick // 2023 - initial 12089 doc
+      { KMD: 3973890 },
+      { MARTY: 614824 }, //2021 - initial: 830000 morty //2022 - initial: 1436310 morty // 2023 - initial 12228 marty // 2024 - initial 614824 marty
+      { DOC: 600258 }, // 2021 - initial: 830000 rick //2022 - initial: 1421864	rick // 2023 - initial 12089 doc // 2024 - initial 600258 doc
     ];
     for (const chain of SmartChains) {
       let chainName = Object.keys(chain)[0];
@@ -426,13 +426,13 @@ const processSmartChain = async (name, start) => {
           ) < 45
             ? moment.duration(timeStampLastNota.diff(momentNow)).humanize(true)
             : moment
-                .duration(timeStampLastNota.diff(momentNow))
-                .humanize(true) +
-              ` (${Math.round(
-                Math.abs(
-                  moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
-                )
-              )} minutes)`;
+              .duration(timeStampLastNota.diff(momentNow))
+              .humanize(true) +
+            ` (${Math.round(
+              Math.abs(
+                moment.duration(timeStampLastNota.diff(momentNow)).asMinutes()
+              )
+            )} minutes)`;
         delete notary[`last${chainName}NotaTxnIdStamp`];
         notary[`last${chainName}NotaTxnId`] = notaTxId;
         if (!timeStampLastNota.isValid()) {
@@ -506,7 +506,7 @@ const processSmartChain = async (name, start) => {
       let candidatesWithTestnet = {};
 
       const voteRes = await axios.get(
-        "https://kip0001.smk.dog/api/v3/polls/VOTE2023/info"
+        "https://kip0001.smk.dog/api/v3/polls/VOTE2024/info"
       );
 
       const voteData =
@@ -519,11 +519,11 @@ const processSmartChain = async (name, start) => {
             option.testnet.forEach((testnetName) => {
               candidatesWithTestnet[testnetName]
                 ? candidatesWithTestnet[testnetName].electionSpots.push(
-                    `${option.candidate}_${region}`
-                  )
+                  `${option.candidate}_${region}`
+                )
                 : (candidatesWithTestnet[testnetName] = {
-                    electionSpots: [`${option.candidate}_${region}`],
-                  });
+                  electionSpots: [`${option.candidate}_${region}`],
+                });
               if (option.veteran) {
                 candidatesWithTestnet[testnetName].isVeteran = true;
               }
@@ -552,7 +552,7 @@ const processSmartChain = async (name, start) => {
 
     await saveToAwsS3(
       "kmd-data",
-      "notary-stats-2023/main.json",
+      "notary-stats-2024/main.json",
       JSON.stringify(notaryData)
     );
     console.log(`
